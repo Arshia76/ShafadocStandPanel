@@ -1,0 +1,56 @@
+.Button {
+    font-size: 25px;
+    line-height: 40px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: #e7e7e7;
+    direction: rtl;
+}
+
+.Button:disabled {
+    cursor: default;
+    opacity: 0.5;
+}
+
+.Button div {
+    margin: auto;
+    white-space: nowrap;
+}
+
+.Button.red {
+    color: white;
+    background-color: var(--goo-red);
+}
+
+.Button.yellow {
+    color: #555;
+    background-color: var(--goo-yel);
+}
+
+.Button.green {
+    color: white;
+    background-color: var(--goo-gre);
+}
+
+.Button.blue {
+    color: white;
+    background-color: var(--goo-blu);
+}
+
+.Button-icon {
+    display: block;
+    width: 40px;
+    height: 40px;
+    padding: 5px;
+}
+
+.Button-loader {
+    width: 40px;
+    height: 40px;
+    margin-left: 10px;
+    padding: 5px;
+}

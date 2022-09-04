@@ -1,0 +1,18 @@
+.ItemCard {
+    background-color: #f8f8f8;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 23px;
+    line-height: 60px;
+    margin: 5px 0;
+    padding: 0 20px;
+}
+
+.ItemCard:last-of-type {
+    border-bottom: none;
+}
+
+.ItemCard.selected {
+    background-color: var(--goo-yel);
+    border-bottom: none;
+}

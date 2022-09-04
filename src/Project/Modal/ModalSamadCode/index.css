@@ -1,0 +1,10 @@
+.Modal#ModalSamadCode .Modal-body{
+    max-width: 400px;
+}
+
+.Modal#ModalSamadCode .Modal-body .buttons{
+    font-size: 30px;
+}
+.Modal#ModalSamadCode .Modal-body .input input{
+    font-size: 30px;
+}

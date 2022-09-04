@@ -1,0 +1,15 @@
+.Modal#ModalInsureBox .List{
+    flex: 1;
+    max-height: 481px;
+    overflow: auto;
+}
+
+.Modal#ModalInsureBox .calculate{
+  line-height: 60px;
+}
+
+.Modal#ModalInsureBox .loader{
+    width: 30px;
+    height: 30px;
+    margin-left: 10px;
+}

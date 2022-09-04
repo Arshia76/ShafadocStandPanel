@@ -1,0 +1,11 @@
+.Modal#ModalPayment .loader {
+    width: 30px;
+    height: 30px;
+    margin-left: 10px;
+}
+
+.Modal#ModalPayment .promp {
+    font-size: 20px;
+    text-align: center;
+    color: var(--goo-red);
+}

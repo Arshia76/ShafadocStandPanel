@@ -1,0 +1,37 @@
+.SpecialityCard {
+    display: flex;
+    width: 100%;
+    font-size: 30px;
+    padding: 20px 25px;
+    color: #555;
+    border-radius: 10px;
+    background-color: white;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px -7px gray;
+    cursor: pointer;
+}
+
+.SpecialityCard.disabled {
+    opacity: 0.7;
+}
+
+.SpecialityCard:last-child {
+    margin-bottom: 0;
+}
+
+.SpecialityCard img{
+    width: 50px;
+    height: 50px;
+    margin-left: 20px;
+}
+
+.SpecialityCard h1 {
+    font-size: 25px;
+    font-weight: 500;
+    /*padding-right: 40px;*/
+}
+
+.SpecialityCard p {
+    font-size: 20px;
+    font-weight: 300;
+}

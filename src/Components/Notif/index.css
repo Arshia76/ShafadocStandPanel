@@ -1,0 +1,92 @@
+#notification-root {
+    padding: 0 10px;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    /* max-width: 500px; */
+    direction: rtl;
+    z-index: 5000;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+}
+
+.Notif {
+    width: fit-content;
+    background-color: white;
+    padding: 15px;
+    margin: 10px auto 10px;
+    border-radius: 7px;
+    box-shadow: 0 0 10px -5px gray;
+    font-size: 25px;
+    color: #555;
+    position: relative;
+    overflow: hidden;
+    /*opacity: 0;*/
+    /*transform: translateY(110%);*/
+    opacity: 0;
+    transition: all 0.3s ease-in-out;
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+}
+
+.Notif.show {
+    opacity: 1;
+    /*transform: translateY(0);*/
+}
+
+.Notif-icon {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin: 15px;
+}
+
+.Notif-content {
+    line-height: 40px;
+}
+
+.Notif.icon .Notif-content:before {
+    content: 'بب ';
+    color: white;
+}
+
+.Notif .timer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 50%;
+    height: 4px;
+    border-radius: 1px;
+    background-color: #6cb2eb;
+}
+
+.Notif.error .timer {
+    background-color: var(--goo-red);
+}
+
+.Notif.prompt .timer {
+    background-color: var(--goo-gre);
+}
+
+.Notif.show .timer {
+    animation-name: timer;
+    animation-fill-mode: forwards;
+    animation-timing-function: linear;
+}
+
+.Notif:hover .timer {
+    animation-play-state: paused;
+}
+
+@keyframes timer {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+}

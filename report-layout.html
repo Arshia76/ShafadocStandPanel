@@ -1,0 +1,47 @@
+<!--<div class="dis-f mar-b-10 pad-b-10" style="border-bottom: 3px solid rgb(0, 0, 0);">-->
+<!--    <div class="ReportReceipt-circle"><span class="Bold">{{turnNo}}</span>شماره نوبت پزشک</div>-->
+<!--    <div class="flex ali-e pad-s-10">-->
+<!--        <h3 class="ReportReceipt-second-title">سامانه پزشکان شفاداگ</h3>-->
+<!--        <p class="ReportReceipt-domain">www.shafadoc.ir</p>-->
+<!--        <h2 class="ReportReceipt-black-title ali-c">رزرو اینترنتی</h2>-->
+<!--      -->
+<!--    </div>-->
+<!--</div>-->
+<!--<div class="ReportReceipt-doctor"><h1>{{doctorName}}</h1></div>-->
+<!--<div class="Detail">-->
+<!--    <div class="ReportReceiptDetail"><label>نام درمانگاه:</label><p>{{clinicName}}</p></div>-->
+<!--    <div class="ReportReceiptDetail"><label>ساعت شروع ویزیت:</label><p>{{visitTime}}</p></div>-->
+<!--    <div class="ReportReceiptDetail"><label>ساعت نوبت گیری:</label><p>{{reserveTime}}</p></div>-->
+<!--    <div class="ReportReceiptDetail"><label>تاریخ:</label><p>{{reserveDate}}</p></div>-->
+<!--    <div class="ReportReceiptDetail"><label>نام بیمار:</label><p>{{patientName}}</p></div>-->
+<!--    <div class="ReportReceiptDetail"><label>کدملی بیمار:</label><p>{{patientNationalCode}}</p></div>-->
+<!--    <div class="ReportReceiptDetail"><label>نوع بیمه:</label><p>{{insuranceName}}</p></div>-->
+<!--    <div class="ReportReceiptDetail"><label>شماره بیمه:</label><p>{{insuranceNumber}}</p></div>-->
+<!--    <div class="ReportReceiptDetail"><label>مبلغ پرداختی:</label><p>{{payedAmount}}</p></div>-->
+<!--</div>-->
+
+
+<div class="dis-f" style="border-bottom: 3px solid rgb(0, 0, 0); display: flex !important; align-items: center !important; padding: 10px !important; margin: 5px !important;" >
+    <!--    <div class="ReportReceipt-circle" style="width: 70px !important; height: 70px !important; border-radius: 50% !important; "><span class="Bold">{{turnNo}}</span>شماره نوبت</div>-->
+    <div class="flex ali-e pad-s-10" style="align-self: flex-end !important; margin-bottom: 10px !important">
+        <!--        <div style="display: flex !important;align-items: center !important;justify-content: space-between !important;">-->
+        <!--            <h3 class="ReportReceipt-second-title">سامانه پزشکان شفاداک</h3>-->
+        <!--            <p class="ReportReceipt-domain" >www.shafadoc.ir</p>-->
+        <!--        </div>-->
+        <h2 class="ReportReceipt-black-title ali-c">رزرو اینترنتی / تلفنی</h2>
+        <!--        <h2 class="ReportReceipt-under-blcoack-title ali-c">{{resCount}}</h2>-->
+    </div>
+</div>
+<div class="Detail">
+    <div class="ReportReceiptDetail"><label>نوبت:</label><p>{{internetResInfoTurnNo}}</p></div>
+    <div class="ReportReceiptDetail"><label>نام پزشک:</label><p>{{internetResInfoDocType}} {{internetResInfoDocName}} {{internetResInfoDocFamily}}</p></div>
+    <div class="ReportReceiptDetail"><label>نام درمانگاه:</label><p>{{internetResInfoSpName}}</p></div>
+    <div class="ReportReceiptDetail"><label>زمان نوبت گیری:</label><p>{{internetResInfoTransactionTime}} - {{internetResInfoTransactionDate}}</p></div>
+    <div class="ReportReceiptDetail"><label>زمان ویزیت:</label><p>{{internetResInfoAppointmentTime}} - {{internetResInfoAppointmentDate}}</p></div>
+    <div class="ReportReceiptDetail"><label>نام بیمار:</label><p>{{internetResInfoPatientName}} {{internetResInfoPatientFamily}}</p></div>
+    <div class="ReportReceiptDetail"><label>کدملی بیمار:</label><p>{{nationalCode}}</p></div>
+    <div class="ReportReceiptDetail"><label> بیمه:</label><p>{{internetResInfoInsuranceName}} - {{internetResInfoInsuranceID}}</p></div>
+    <div class="ReportReceiptDetail"><label>مبلغ پرداختی:</label><p>{{internetResInfoPaymentAmount}}</p></div>
+    <div class="ReportReceiptDetail"><label>مبلغ خدمات الکترونیکی:</label><p>{{internetResInfoChargeAmount}}</p></div>
+    <!--    <div class="ReportReceiptDetail"><label>hid:</label><p>{{hid}}</p></div>-->
+</div>

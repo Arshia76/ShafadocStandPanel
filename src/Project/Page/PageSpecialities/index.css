@@ -1,0 +1,12 @@
+.PageSpecialities #main-logo {
+    width: 100%;
+    max-width: 300px;
+    margin: auto;
+    display: flex;
+    padding: 30px;
+}
+
+.PageSpecialities .main{
+    display: flex;
+    flex-wrap: wrap;
+}

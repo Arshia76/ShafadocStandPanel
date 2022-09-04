@@ -1,0 +1,26 @@
+.PageSetting .checkbox,
+.PageSetting .radio {
+    font-size: 20px;
+    line-height: 30px;
+    display: flex;
+    flex-direction: row;
+    color: #555;
+}
+
+.PageSetting .checkbox input,
+.PageSetting .radio input {
+    width: 30px;
+    height: 30px;
+    margin-left: 10px;
+}
+
+.PageSetting select {
+    font-size: 20px;
+    line-height: 30px;
+    box-sizing: border-box;
+    max-width: calc(100% - 16px);
+    margin: 8px;
+    border: solid 1px var(--light3);
+    border-radius: 5px;
+    background-color: white;
+}

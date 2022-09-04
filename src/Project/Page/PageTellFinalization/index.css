@@ -1,0 +1,20 @@
+.CheckList {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 50px;
+    background-color: white;
+    /*flex: 1;*/
+    padding: 0 20px;
+    box-shadow: 0 0 10px -7px gray;
+    border-radius: 10px;
+    padding-right: 50px;
+    /*background-image: url("../../../Resource/Image/pack/minus.svg");*/
+    background-position: calc(100% - 10px);
+    background-repeat: no-repeat;
+    background-size: 30px;
+    width: fit-content;
+}
+
+.CheckList.checked{
+    background-image: url("../../../Resource/Image/pack/check.svg");
+}

@@ -1,0 +1,38 @@
+.PageDarmangah #main-logo {
+    width: 100%;
+    max-width: 300px;
+    margin: auto;
+    display: flex;
+    padding: 30px;
+}
+
+.PageDarmangah-Card {
+    display: block;
+    width: 100%;
+    font-size: 30px;
+    padding: 20px 30px;
+    color: #555;
+    border-radius: 10px;
+    background-color: white;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px -7px gray;
+}
+
+.PageDarmangah-Card:last-child {
+    margin-bottom: 0;
+}
+
+.PageDarmangah-Card h1 {
+    font-size: 30px;
+    font-weight: 500;
+    background-image: url("../../../Resource/Image/pack/check.svg");
+    background-size: 30px;
+    background-position: right;
+    background-repeat: no-repeat;
+    padding-right: 40px;
+}
+
+.PageDarmangah-Card p {
+    font-size: 20px;
+    font-weight: 300;
+}

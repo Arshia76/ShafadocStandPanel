@@ -1,0 +1,100 @@
+@page {
+    margin: 0 0 0 0;
+}
+
+.ReportReceipt {
+    max-width: 100mm;
+    margin: auto;
+    padding: 10px;
+    color: #000;
+    border: solid 3px #000;
+}
+
+.ReportReceipt svg {
+    width: 100%;
+}
+
+.ReportReceipt-circle {
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    text-align: center;
+    border: solid 3px #000;
+    border-radius: 50%;
+}
+
+.ReportReceipt-first-title {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.ReportReceipt-second-title {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.ReportReceipt-domain {
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.ReportReceipt-black-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: black;
+    border: solid 3px black;
+    border-radius: 5px;
+}
+
+.ReportReceipt-under-black-title {
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.ReportReceipt span.Bold {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.ReportReceipt-prompt {
+    font-size: 12px;
+    font-weight: 500;
+    border-top: solid 3px black;
+}
+
+.ReportReceipt-doctor,
+.ReportReceiptDetail {
+    display: flex;
+}
+
+.ReportReceipt-doctor img {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+}
+
+.ReportReceiptDetail img {
+    width: 30px;
+    height: 30px;
+    margin-left: 10px;
+    padding: 3px;
+}
+
+.ReportReceipt-doctor h1,
+.ReportReceiptDetail label {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 30px;
+    padding-left: 10px;
+}
+
+.ReportReceiptDetail p {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 30px;
+}

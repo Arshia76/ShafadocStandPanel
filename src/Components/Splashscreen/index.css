@@ -1,0 +1,17 @@
+
+.Splashscreen {
+    margin: auto;
+}
+
+.Splashscreen img {
+    margin: auto;
+    display: block;
+    width: 200px;
+}
+
+.Splashscreen h3 {
+    font-size: 20px;
+    text-align: center;
+    padding-top: 20px;
+    font-weight: 300;
+}

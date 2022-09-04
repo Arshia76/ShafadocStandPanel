@@ -1,0 +1,203 @@
+.Modal {
+    direction: rtl;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5000;
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    transition: all .2s ease-in-out;
+}
+
+.Modal:not(.pre-show) {
+    display: none;
+}
+
+.Modal.show {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.Modal-body {
+    background-color: white;
+    margin: auto;
+    width: 100%;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.7);
+    opacity: 0;
+    transition: all .4s cubic-bezier(.07, .92, .34, 1.22);
+    position: relative;
+    overflow: hidden;
+}
+
+.Modal.small .Modal-body {
+    max-width: 300px;
+}
+
+.Modal.medium .Modal-body {
+    max-width: 600px;
+}
+
+.Modal.large .Modal-body {
+    max-width: 1000px;
+}
+
+.Modal.wide .Modal-body {
+    max-width: unset;
+}
+
+.Modal.show .Modal-body {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.Modal-content {
+    flex: 1;
+    padding: 0 15px;
+    overflow: auto;
+    position: relative;
+}
+
+.Modal.loading .Modal-content:after {
+    content: '';
+    background-color: white;
+    opacity: 0.5;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+.Modal-header {
+    padding: 0 15px 15px;
+    box-shadow: 0 0 10px -7px gray;
+}
+
+.Modal-title {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+    color: #555;
+    padding-top: 15px;
+}
+
+.Modal-description {
+    font-size: 12px;
+    font-weight: 300;
+    color: #666;
+    padding-top: 5px;
+}
+
+.Modal-content {
+    padding: 10px;
+}
+
+.Modal-controls {
+    /*flex: 1;*/
+    min-height: 20px;
+    padding: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.Modal-shadow {
+    box-shadow: 0 0 10px -7px gray;
+    z-index: 2;
+}
+
+.Modal-error {
+    font-size: 13px;
+    flex: 1;
+    color: var(--fos-red);
+    line-height: 20px;
+    padding: 5px;
+    margin: auto;
+}
+
+.Modal-loading {
+    background-position: right;
+    background-size: 20px;
+    background-repeat: no-repeat;
+    line-height: 20px;
+    margin: auto 10px;
+    padding-right: 25px;
+    font-size: 13px;
+    min-height: 20px;
+}
+
+.Modal.shake .Modal-body {
+    animation-timing-function: ease-in-out;
+    animation-name: pulse;
+    animation-duration: 0.5s;
+}
+
+@keyframes pulse {
+    0% {
+        -webkit-transform: scaleX(1);
+        transform: scaleX(1)
+    }
+    50% {
+        -webkit-transform: scale3d(0.97, 0.97, 0.97);
+        transform: scale3d(0.97, 0.97, 0.97)
+    }
+    to {
+        -webkit-transform: scaleX(1);
+        transform: scaleX(1)
+    }
+}
+
+@keyframes tada {
+    0% {
+        -webkit-transform: scaleX(1);
+        transform: scaleX(1)
+    }
+    10%, 20% {
+        -webkit-transform: scale3d(.9, .9, .9) rotate(-3deg);
+        transform: scale3d(.9, .9, .9) rotate(-3deg)
+    }
+    30%, 50%, 70%, 90% {
+        -webkit-transform: scale3d(1.1, 1.1, 1.1) rotate(3deg);
+        transform: scale3d(1.1, 1.1, 1.1) rotate(3deg)
+    }
+    40%, 60%, 80% {
+        -webkit-transform: scale3d(1.1, 1.1, 1.1) rotate(-3deg);
+        transform: scale3d(1.1, 1.1, 1.1) rotate(-3deg)
+    }
+    to {
+        -webkit-transform: scaleX(1);
+        transform: scaleX(1)
+    }
+}
+
+@keyframes shake {
+    0% {
+        -webkit-transform: translateX(0);
+        transform: translateX(0)
+    }
+    6.5% {
+        -webkit-transform: translateX(-6px) rotateY(-9deg);
+        transform: translateX(-6px) rotateY(-9deg)
+    }
+    18.5% {
+        -webkit-transform: translateX(5px) rotateY(7deg);
+        transform: translateX(5px) rotateY(7deg)
+    }
+    31.5% {
+        -webkit-transform: translateX(-3px) rotateY(-5deg);
+        transform: translateX(-3px) rotateY(-5deg)
+    }
+    43.5% {
+        -webkit-transform: translateX(2px) rotateY(3deg);
+        transform: translateX(2px) rotateY(3deg)
+    }
+    50% {
+        -webkit-transform: translateX(0);
+        transform: translateX(0)
+    }
+}

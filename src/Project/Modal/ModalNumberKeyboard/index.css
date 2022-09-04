@@ -1,0 +1,17 @@
+.Modal#ModalNumberKeyboard .Modal-body{
+    max-width: 600px;
+
+}
+
+.Modal#ModalNumberKeyboard .Modal-body .buttons{
+    font-size: 30px;
+    line-height: 50px !important;
+}
+.Modal#ModalNumberKeyboard .Modal-body .input input{
+    font-size: 30px;
+    padding: 7px;
+}
+
+.Modal#ModalNumberKeyboard .Modal-body .input input::placeholder {
+    color: grey;
+}
