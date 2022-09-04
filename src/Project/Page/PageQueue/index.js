@@ -27,19 +27,29 @@ class PageQueue extends MyComponent {
         const {state, props} = this;
         return <div>
             <div style={{display: 'flex'}}>
-                <Button theme={'blue'} className={'mar-8'} onClick={this.changeQueueClickHandler.bind(this, 'today')} disabled={props.match.params.type === 'today'}>صف روز جاری</Button>
-                <Button theme={"blue"} className={'mar-8'} onClick={this.changeQueueClickHandler.bind(this, 'future')} disabled={props.match.params.type === 'future'}>صف روز‌های آینده</Button>
-                <Button theme={"red"} className={'mar-8'} onClick={_ => props.history.push(Resource.Route.SETTING)}>بازگشت</Button>
+                <Button theme={'blue'} className={'mar-8'} onClick={this.changeQueueClickHandler.bind(this, 'today')}
+                        disabled={props.match.params.type === 'today'}>صف روز جاری</Button>
+                <Button theme={"blue"} className={'mar-8'} onClick={this.changeQueueClickHandler.bind(this, 'future')}
+                        disabled={props.match.params.type === 'future'}>صف روز‌های آینده</Button>
+                <Button theme={"red"} className={'mar-8'}
+                        onClick={_ => props.history.push(Resource.Route.SETTING)}>بازگشت</Button>
                 <div className="flex"></div>
-                <Button theme={"yellow"} className={'mar-8'} onClick={this.removeFinishedReserves.bind(this)}>{{today: 'حذف رزرو‌های تکمیلی جاری', future: 'حذف رزرو‌های تکمیلی آینده'}[props.match.params.type]}</Button>
-                <Button theme={"red"} className={'mar-8'} onClick={this.removeAllReserves.bind(this)}>{{today: 'حذف کل رزرو‌های جاری', future: 'حذف کل رزرو‌های آینده'}[props.match.params.type]}</Button>
+                <Button theme={"yellow"} className={'mar-8'} onClick={this.removeFinishedReserves.bind(this)}>{{
+                    today: 'حذف رزرو‌های تکمیلی جاری',
+                    future: 'حذف رزرو‌های تکمیلی آینده'
+                }[props.match.params.type]}</Button>
+                <Button theme={"red"} className={'mar-8'} onClick={this.removeAllReserves.bind(this)}>{{
+                    today: 'حذف کل رزرو‌های جاری',
+                    future: 'حذف کل رزرو‌های آینده'
+                }[props.match.params.type]}</Button>
             </div>
             <table>
                 <tr>
                     {state.keys.map((item, index) => <th key={index}>{item}</th>)}
                 </tr>
                 {state.list.map((row, i) => <tr key={i}>
-                    {state.keys.map((key, j) => <td key={`${i}${j}`}>{['response'].includes(key) ? JSON.stringify(row[key]) : row[key]}</td>)}
+                    {state.keys.map((key, j) => <td
+                        key={`${i}${j}`}>{['response'].includes(key) ? JSON.stringify(row[key]) : row[key]}</td>)}
                 </tr>)}
             </table>
         </div>

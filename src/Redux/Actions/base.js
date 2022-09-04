@@ -27,6 +27,7 @@ export const resetUserDataEntry = _ => {
     return {
         type: UPDATE_BASE,
         userDataEntry: {
+            specialClinic: false,
             reciept: null,
             darmangah: null, // MORNING, EVENING, FUTURE
             nationalCode: null,

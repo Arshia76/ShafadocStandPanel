@@ -8,7 +8,6 @@ import {connect} from 'react-redux';
 import SpecialityCard from '../../SpecialityCard';
 import {updateBase, updateUserDataEntry} from '../../../Redux/Actions/base';
 import BackToMainMenu from "../../../backToMainMenu";
-import Signalr from "../../../signalr";
 
 
 class PageSpecialities extends MyComponent {
@@ -61,11 +60,7 @@ class PageSpecialities extends MyComponent {
 
     cardClickHandler(data) {
         const {props} = this;
-
-
         props.updateUserDataEntry({speciality: data});
-
-        
         props.updateBase({tax_id: data.Id});
         props.history.push(Resource.Route.DOCTORS);
     }

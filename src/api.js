@@ -193,13 +193,27 @@ class api {
                      *      2 reservable
                      */
                     // فقط موارد قابل رزرو نمایش داده شوند
-                    data = data.filter(item => item.reserveStatus === 2);
+                    console.log(props)
 
-                    let listDarmangah = data.map(item => ({
-                        id: item?.Taxo?.[0]?.taxonomy_id || 0,
-                        title: item?.Taxo?.[0]?.taxonomy_name || 'نامشخص',
-                        icon: Resource.IMAGE.DARMANGAH
-                    }));
+                    data = data.filter(item => item.reserveStatus === 2);
+                    let listDarmangah;
+                    if (props.specialties && Object.keys(props.specialties).length > 0) {
+                        console.log(props.specialties);
+                        console.log(Object.values(props.specialties));
+                        console.log(data)
+                        listDarmangah = data.filter(item => Object.values(props.specialties).includes(item?.Taxo?.[0]?.taxonomy_id.toString())).map(item => ({
+                            id: item?.Taxo?.[0]?.taxonomy_id || 0,
+                            title: item?.Taxo?.[0]?.taxonomy_name || 'نامشخص',
+                            icon: Resource.IMAGE.DARMANGAH
+                        }));
+                    } else {
+                        listDarmangah = data.map(item => ({
+                            id: item?.Taxo?.[0]?.taxonomy_id || 0,
+                            title: item?.Taxo?.[0]?.taxonomy_name || 'نامشخص',
+                            icon: Resource.IMAGE.DARMANGAH
+                        }));
+                    }
+
 
                     const specialities = [...new Map(listDarmangah.map(item => [item['id'], item])).values()]
 
@@ -321,6 +335,73 @@ class api {
                     resolve(data)
                 })
                 .catch(err => reject(err))
+        })
+    }
+
+    static oneAccountPayment(address, props) {
+        return new Promise((resolve, reject) => {
+            fetch(address, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(props)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json()
+                    } else {
+                        return reject('پرداخت ناموفق لطفا دوباره امتحان کنید.')
+                    }
+                })
+                .then(data => {
+                    console.log(data.ReturnCode)
+                    console.log(data)
+
+                    if (data.ReturnCode == 100) {
+                        console.log(data);
+                        resolve(data)
+                    } else {
+                        console.log(data)
+                        return reject('پرداخت ناموفق لطفا دوباره امتحان کنید.')
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                    reject('پرداخت ناموفق لطفا دوباره امتحان کنید.')
+                })
+        })
+    }
+
+    static multiAccountPayment(address, props) {
+        return new Promise((resolve, reject) => {
+            fetch(address, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(props)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json()
+                    } else {
+                        return reject('پرداخت ناموفق لطفا دوباره امتحان کنید.')
+                    }
+                })
+                .then(data => {
+                    if (data.ReturnCode == 100) {
+                        console.log(data);
+                        resolve(data)
+                    } else {
+                        console.log(data)
+                        return reject('پرداخت ناموفق لطفا دوباره امتحان کنید.')
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                    reject('پرداخت ناموفق لطفا دوباره امتحان کنید.')
+                })
         })
     }
 

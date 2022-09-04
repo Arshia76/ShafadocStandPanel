@@ -25,7 +25,8 @@ class ModalInsureBox extends MyComponent {
             fields: {},
             loading: true,
             confirm: false,
-            insuranceMap: {}
+            insuranceMap: {},
+            foreignMap: {}
         };
 
         this.ref = {
@@ -51,15 +52,36 @@ class ModalInsureBox extends MyComponent {
             .catch(err => {
                 alert('فایل نقشه بیمه پیدا نشد.');
             });
+        Main.getForeignMap(setting.foreignMapPath)
+            .then(data => {
+                this.setState({foreignMap: data});
+            })
+            .catch(err => {
+                alert('فایل نقشه بیمه اتباع پیدا نشد.');
+                console.log(err)
+            });
 
         this.setState({loading: true});
     }
 
     render() {
-        const {state} = this;
-        const {fields} = state
+        const {state, props} = this;
+        const {setting, base} = props;
+        const {fields} = state;
         const freeInsurers = [4, 71, 1]; // لیست گزینه‌هایی که نیاز به دریافت شماره بیمه ندارد
         const needInsuranceNumber = fields.insurance && !freeInsurers.includes(fields.insurance?.id);
+
+        if (!state.loading && !state.confirm && base.userDataEntry.nationality === 'FOREIGN' && !setting.showForeignInsuranceList) {
+            props.updateUserDataEntry({
+                shafadocInsurance: {
+                    id: setting.foreigenerCodeAzad,
+                    name: 'اتباع خارجه آزاد',
+                    number: 0
+                }
+            })
+            this.close(true);
+            return;
+        }
 
         return <Modal
             required={true}
@@ -93,55 +115,57 @@ class ModalInsureBox extends MyComponent {
                     <div className={'pad-8'}><h3 style={{fontSize: '20px'}}>لطفا بیمه خود را انتخاب کنید.</h3></div>
                     <div className="dis-f">
                         <div className={'List fb-10'}>
-                            {this.props.base.userDataEntry.nationality === 'FOREIGN' ? this.props.base.insurances.filter(item => item.id.toString() === this.props.setting.foreigenerCode.toString()).map((item, i) => {
+                            {this.props.base.userDataEntry.nationality === 'FOREIGN' ? this.props.base.insurances.filter(item => Object.values(this.state.foreignMap).includes(item.id.toString())).map((item, i) => {
                                 return <ItemCard key={i} data={item} selected={fields.insurance?.id == item.id}
                                                  onClick={this.clickEvent.bind(this)} title={item.name}/>
-                            }) : this.props.base.insurances.filter(item => item.id.toString() !== this.props.setting.foreigenerCode.toString()).map((item, i) => {
+                            }) : this.props.base.insurances.filter(item => !(Object.values(this.state.foreignMap).includes(item.id.toString()))).map((item, i) => {
                                 return <ItemCard key={i} data={item} selected={fields.insurance?.id == item.id}
                                                  onClick={this.clickEvent.bind(this)} title={item.name}/>;
                             })}
                         </div>
                         {needInsuranceNumber &&
-                        <div className={'Keyboard dis-f fb-10'} style={{flexDirection: 'column', width: '100%'}}>
-                            <Input ref={this.ref.insuranceNumber} className={'pad-4'} align={'center'} direction={'ltr'}
-                                   placeholder={'شماره بیمه'} type="number" value={fields.insuranceNumber}
-                                   style={{fontSize: '30px'}} onChange={this.setField.bind(this, 'insuranceNumber')}/>
-                            <div className={'dis-f'}>
-                                <Button className={'flex calculate mar-4'}
-                                        onClick={this.keyboardClickHandler.bind(this, '3')} theme="blue">3</Button>
-                                <Button className={'flex calculate mar-4'}
-                                        onClick={this.keyboardClickHandler.bind(this, '2')} theme="blue">2</Button>
-                                <Button className={'flex calculate mar-4'}
-                                        onClick={this.keyboardClickHandler.bind(this, '1')} theme="blue">1</Button>
-                            </div>
-                            <div className={'dis-f'}>
-                                <Button className={'flex calculate mar-4'}
-                                        onClick={this.keyboardClickHandler.bind(this, '6')} theme="blue">6</Button>
-                                <Button className={'flex calculate mar-4'}
-                                        onClick={this.keyboardClickHandler.bind(this, '5')} theme="blue">5</Button>
-                                <Button className={'flex calculate mar-4'}
-                                        onClick={this.keyboardClickHandler.bind(this, '4')} theme="blue">4</Button>
-                            </div>
-                            <div className={'dis-f'}>
-                                <Button className={'flex calculate mar-4'}
-                                        onClick={this.keyboardClickHandler.bind(this, '9')} theme="blue">9</Button>
-                                <Button className={'flex calculate mar-4'}
-                                        onClick={this.keyboardClickHandler.bind(this, '8')} theme="blue">8</Button>
-                                <Button className={'flex calculate mar-4'}
-                                        onClick={this.keyboardClickHandler.bind(this, '7')} theme="blue">7</Button>
-                            </div>
-                            <div className={'dis-f'}>
-                                <Button className={'flex calculate mar-4'}
-                                        onClick={this.keyboardClickHandler.bind(this, '0')} theme="blue">0</Button>
-                            </div>
-                            <div className="flex"/>
-                            <div className={'dis-f'}>
-                                <Button className={'flex mar-4'} onClick={this.submit.bind(this)}
-                                        theme="green">ثبت</Button>
-                                <Button className={'flex mar-4'} onClick={this.backToMainMenu.bind(this)}
-                                        theme="red">بازگشت {state.timer}</Button>
-                            </div>
-                        </div>}
+                            <div className={'Keyboard dis-f fb-10'} style={{flexDirection: 'column', width: '100%'}}>
+                                <Input ref={this.ref.insuranceNumber} className={'pad-4'} align={'center'}
+                                       direction={'ltr'}
+                                       placeholder={'شماره بیمه'} type="number" value={fields.insuranceNumber}
+                                       style={{fontSize: '30px'}}
+                                       onChange={this.setField.bind(this, 'insuranceNumber')}/>
+                                <div className={'dis-f'}>
+                                    <Button className={'flex calculate mar-4'}
+                                            onClick={this.keyboardClickHandler.bind(this, '3')} theme="blue">3</Button>
+                                    <Button className={'flex calculate mar-4'}
+                                            onClick={this.keyboardClickHandler.bind(this, '2')} theme="blue">2</Button>
+                                    <Button className={'flex calculate mar-4'}
+                                            onClick={this.keyboardClickHandler.bind(this, '1')} theme="blue">1</Button>
+                                </div>
+                                <div className={'dis-f'}>
+                                    <Button className={'flex calculate mar-4'}
+                                            onClick={this.keyboardClickHandler.bind(this, '6')} theme="blue">6</Button>
+                                    <Button className={'flex calculate mar-4'}
+                                            onClick={this.keyboardClickHandler.bind(this, '5')} theme="blue">5</Button>
+                                    <Button className={'flex calculate mar-4'}
+                                            onClick={this.keyboardClickHandler.bind(this, '4')} theme="blue">4</Button>
+                                </div>
+                                <div className={'dis-f'}>
+                                    <Button className={'flex calculate mar-4'}
+                                            onClick={this.keyboardClickHandler.bind(this, '9')} theme="blue">9</Button>
+                                    <Button className={'flex calculate mar-4'}
+                                            onClick={this.keyboardClickHandler.bind(this, '8')} theme="blue">8</Button>
+                                    <Button className={'flex calculate mar-4'}
+                                            onClick={this.keyboardClickHandler.bind(this, '7')} theme="blue">7</Button>
+                                </div>
+                                <div className={'dis-f'}>
+                                    <Button className={'flex calculate mar-4'}
+                                            onClick={this.keyboardClickHandler.bind(this, '0')} theme="blue">0</Button>
+                                </div>
+                                <div className="flex"/>
+                                <div className={'dis-f'}>
+                                    <Button className={'flex mar-4'} onClick={this.submit.bind(this)}
+                                            theme="green">ثبت</Button>
+                                    <Button className={'flex mar-4'} onClick={this.backToMainMenu.bind(this)}
+                                            theme="red">بازگشت {state.timer}</Button>
+                                </div>
+                            </div>}
                     </div>
                     {!needInsuranceNumber && <div className={'dis-f'}>
                         <Button ref={this.ref.submit} className={'flex mar-4'} onClick={this.submit.bind(this)}
@@ -304,6 +328,7 @@ class ModalInsureBox extends MyComponent {
                         });
                 } else if (setting.DIRECT_INQUIRY || (setting.DITAS && setting.DIRECT_INQUIRY)) {
                     const {userDataEntry} = this.props.base;
+                    const {setting} = this.props;
                     api.getInsuranceDataByDitas2(App.storage.get('redux', {}).base.userDataEntry.nationalCode)
                         .then(data => {
                             if (this.unmounted)
@@ -311,9 +336,28 @@ class ModalInsureBox extends MyComponent {
 
                             console.log(data)
                             if (data.type === 'ditas2') {
-                                if (!(data?.response?.result?.data?.isSuccess) || data?.response?.resCode === -12305)
-                                    this.getSalamatData(App.storage.get('redux', {}).base.userDataEntry.nationalCode)
-                                else {
+                                if (!(data?.response?.result?.data?.isSuccess) || data?.response?.resCode === -12305) {
+                                    if (setting.SALAMAT_INQUIRY) {
+                                        this.getSalamatData(App.storage.get('redux', {}).base.userDataEntry.nationalCode)
+                                    } else {
+                                        if (userDataEntry.nationality === 'IRANIAN') {
+                                            this.setState({loading: false});
+                                        } else {
+                                            if (!setting.showForeignInsuranceList) {
+                                                this.props.updateUserDataEntry({
+                                                    shafadocInsurance: {
+                                                        id: this.props.setting.foreigenerCodeAzad,
+                                                        name: 'اتباع خارجه آزاد',
+                                                        number: 0
+                                                    }
+                                                })
+                                                this.close(true)
+                                            } else {
+                                                this.setState({loading: false})
+                                            }
+                                        }
+                                    }
+                                } else {
                                     const mapResult = this.mapInsurance(
                                         data.response.result.data.data[0].insurer.coded_string || userDataEntry.standardInsurance.id,
                                         data.response.result.data.data[0].insurerBox.coded_string || userDataEntry.standardInsurance.boxId
@@ -344,11 +388,49 @@ class ModalInsureBox extends MyComponent {
                                     this.close(true)
                                 }
                             } else {
-                                this.getSalamatData(App.storage.get('redux', {}).base.userDataEntry.nationalCode)
+                                if (setting.SALAMAT_INQUIRY) {
+                                    this.getSalamatData(App.storage.get('redux', {}).base.userDataEntry.nationalCode)
+                                } else {
+                                    if (userDataEntry.nationality === 'IRANIAN') {
+                                        this.setState({loading: false});
+                                    } else {
+                                        if (!setting.showForeignInsuranceList) {
+                                            this.props.updateUserDataEntry({
+                                                shafadocInsurance: {
+                                                    id: this.props.setting.foreigenerCodeAzad,
+                                                    name: 'اتباع خارجه آزاد',
+                                                    number: 0
+                                                }
+                                            })
+                                            this.close(true)
+                                        } else {
+                                            this.setState({loading: false})
+                                        }
+                                    }
+                                }
                             }
                         }).catch(err => {
                         console.log(err);
-                        this.getSalamatData(App.storage.get('redux', {}).base.userDataEntry.nationalCode)
+                        if (setting.SALAMAT_INQUIRY) {
+                            this.getSalamatData(App.storage.get('redux', {}).base.userDataEntry.nationalCode)
+                        } else {
+                            if (userDataEntry.nationality === 'IRANIAN') {
+                                this.setState({loading: false});
+                            } else {
+                                if (!setting.showForeignInsuranceList) {
+                                    this.props.updateUserDataEntry({
+                                        shafadocInsurance: {
+                                            id: this.props.setting.foreigenerCodeAzad,
+                                            name: 'اتباع خارجه آزاد',
+                                            number: 0
+                                        }
+                                    })
+                                    this.close(true)
+                                } else {
+                                    this.setState({loading: false})
+                                }
+                            }
+                        }
                     })
 
                 }
@@ -409,6 +491,7 @@ class ModalInsureBox extends MyComponent {
 
     getSalamatData(nationalCode) {
         const {userDataEntry} = this.props.base;
+        const {setting} = this.props;
         api.getInsuranceDataBySalamat(nationalCode)
             .then(data => {
                 if (data.type === 'salamat') {
@@ -421,14 +504,18 @@ class ModalInsureBox extends MyComponent {
                         (data?.response?.info?.productName === 'فاقد پوشش بیمه' && userDataEntry.nationality === 'FOREIGN') ||
                         (data?.response?.resCode === -12305 && userDataEntry.nationality === 'FOREIGN')
                     ) {
-                        this.props.updateUserDataEntry({
-                            shafadocInsurance: {
-                                id: this.props.setting.foreigenerCodeAzad,
-                                name: 'اتباع خارجه آزاد',
-                                number: 0
-                            }
-                        })
-                        this.close(true)
+                        if (!setting.showForeignInsuranceList) {
+                            this.props.updateUserDataEntry({
+                                shafadocInsurance: {
+                                    id: this.props.setting.foreigenerCodeAzad,
+                                    name: 'اتباع خارجه آزاد',
+                                    number: 0
+                                }
+                            })
+                            this.close(true)
+                        } else {
+                            this.setState({loading: false})
+                        }
                     } else {
                         const mapResult = this.mapInsurance(
                             data?.response?.info?.productId.toString() || userDataEntry.standardInsurance.id,
@@ -463,6 +550,26 @@ class ModalInsureBox extends MyComponent {
                     if (userDataEntry.nationality === 'IRANIAN')
                         this.setState({loading: false})
                     else {
+                        if (!setting.showForeignInsuranceList) {
+                            this.props.updateUserDataEntry({
+                                shafadocInsurance: {
+                                    id: this.props.setting.foreigenerCodeAzad,
+                                    name: 'اتباع خارجه آزاد',
+                                    number: 0
+                                }
+                            })
+                            this.close(true)
+                        } else {
+                            this.setState({loading: false})
+                        }
+                    }
+                }
+            })
+            .catch(err => {
+                if (userDataEntry.nationality === 'IRANIAN')
+                    this.setState({loading: false})
+                else {
+                    if (!setting.showForeignInsuranceList) {
                         this.props.updateUserDataEntry({
                             shafadocInsurance: {
                                 id: this.props.setting.foreigenerCodeAzad,
@@ -471,21 +578,9 @@ class ModalInsureBox extends MyComponent {
                             }
                         })
                         this.close(true)
+                    } else {
+                        this.setState({loading: false})
                     }
-                }
-            })
-            .catch(err => {
-                if (userDataEntry.nationality === 'IRANIAN')
-                    this.setState({loading: false})
-                else {
-                    this.props.updateUserDataEntry({
-                        shafadocInsurance: {
-                            id: this.props.setting.foreigenerCodeAzad,
-                            name: 'اتباع خارجه آزاد',
-                            number: 0
-                        }
-                    })
-                    this.close(true)
                 }
             })
     }

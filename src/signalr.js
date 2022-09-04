@@ -28,6 +28,10 @@ class signalR {
             var dvalue = JSON.parse(value);
             signalR.setSpDocs(dvalue["Data"]);
         });
+        signalR.hubProxy.on("setAccountingSettings", (value) => {
+            var dvalue = JSON.parse(value);
+            signalR.setAccountingSettings(dvalue["Data"]);
+        });
         signalR.hubProxy.on("setSpesFirst", (value, flag, startTime) => {
             try {
                 var dvalue = JSON.parse(value);
@@ -91,17 +95,34 @@ class signalR {
     static getDocOfSp($spId) {
         console.log($spId);
         if (signalR.connection.id)
-            signalR.hubProxy.invoke("getDocOfSp", signalR.connection.id, JSON.stringify({"command": "getDocOfSp", "Data": {"spId": $spId}}));
+            signalR.hubProxy.invoke("getDocOfSp", signalR.connection.id, JSON.stringify({
+                "command": "getDocOfSp",
+                "Data": {"spId": $spId}
+            }));
     };
 
     static getDocOfSpFirstShift($spId) {
         if (signalR.connection.id)
-            signalR.hubProxy.invoke("getDocOfSpFirstShift", signalR.connection.id, JSON.stringify({"command": "getDocOfSpFirstShift", "Data": {"spId": $spId}}));
+            signalR.hubProxy.invoke("getDocOfSpFirstShift", signalR.connection.id, JSON.stringify({
+                "command": "getDocOfSpFirstShift",
+                "Data": {"spId": $spId}
+            }));
     };
 
     static getDocOfSpSecondShift($spId) {
         if (signalR.connection.id)
-            signalR.hubProxy.invoke("getDocOfSpSecondShift", signalR.connection.id, JSON.stringify({"command": "getDocOfSpSecondShift", "Data": {"spId": $spId}}));
+            signalR.hubProxy.invoke("getDocOfSpSecondShift", signalR.connection.id, JSON.stringify({
+                "command": "getDocOfSpSecondShift",
+                "Data": {"spId": $spId}
+            }));
+    };
+
+    static getAccountingSettings($tId) {
+        if (signalR.connection.id)
+            signalR.hubProxy.invoke("getAccountingSettings", signalR.connection.id, JSON.stringify({
+                "command": "getAccountingSettings",
+                "Data": {"tId": $tId}
+            }));
     };
 
     static getInternetResInfo($codeMeli) {
@@ -121,7 +142,10 @@ class signalR {
         });
 
         if (signalR.connection.id)
-            signalR.hubProxy.invoke("getInternetResInfo", signalR.connection.id, JSON.stringify({"command": "getInternetResInfo", "Data": {"codeMeli": $codeMeli}}));
+            signalR.hubProxy.invoke("getInternetResInfo", signalR.connection.id, JSON.stringify({
+                "command": "getInternetResInfo",
+                "Data": {"codeMeli": $codeMeli}
+            }));
 
         return promise;
     };
@@ -149,12 +173,18 @@ class signalR {
 
     static getResStartNo() {
         if (signalR.connection.id)
-            signalR.hubProxy.invoke("getResStartNo", signalR.connection.id, JSON.stringify({"command": "getResStartNo", "Data": ""}));
+            signalR.hubProxy.invoke("getResStartNo", signalR.connection.id, JSON.stringify({
+                "command": "getResStartNo",
+                "Data": ""
+            }));
     };
 
     static getServices() {
         if (signalR.connection.id)
-            signalR.hubProxy.invoke("getServices", signalR.connection.id, JSON.stringify({"command": "getServices", "Data": {}}));
+            signalR.hubProxy.invoke("getServices", signalR.connection.id, JSON.stringify({
+                "command": "getServices",
+                "Data": {}
+            }));
     };
 
     static getSpes() {
@@ -198,17 +228,25 @@ class signalR {
         });
 
         if (signalR.connection.id)
-            signalR.hubProxy.invoke("reserve", signalR.connection.id, JSON.stringify({"command": "reserve", "Data": {"spId": $spId, "docId": $docId, "tId": $tId, "codeMeli": $codeMeli}}));
+            signalR.hubProxy.invoke("reserve", signalR.connection.id, JSON.stringify({
+                "command": "reserve",
+                "Data": {"spId": $spId, "docId": $docId, "tId": $tId, "codeMeli": $codeMeli}
+            }));
 
         return promise;
     };
 
     static reserveService($serId, $tId, $codeMeli) {
         if (signalR.connection.id)
-            signalR.hubProxy.invoke("reserveService", signalR.connection.id, JSON.stringify({"command": "reserveService", "Data": {"serId": $serId, "tId": $tId, "codeMeli": $codeMeli}}));
+            signalR.hubProxy.invoke("reserveService", signalR.connection.id, JSON.stringify({
+                "command": "reserveService",
+                "Data": {"serId": $serId, "tId": $tId, "codeMeli": $codeMeli}
+            }));
     };
 
     static setDocOfSp = _ => console.log('setDocOfSp');
+
+    static setAccountingSettings = _ => console.log("setAccountingSettings");
 
     static setDocOfSpFirstShift = _ => console.log('setDocOfSpFirstShift');
 
@@ -218,7 +256,10 @@ class signalR {
 
     static setPayData($Data) {
         if (signalR.connection.id)
-            signalR.hubProxy.invoke("setPayData", signalR.connection.id, JSON.stringify({"command": "setPayData", "Data": $Data}));
+            signalR.hubProxy.invoke("setPayData", signalR.connection.id, JSON.stringify({
+                "command": "setPayData",
+                "Data": $Data
+            }));
     };
 
     static setResStartNo = _ => console.log('setResStartNo');
@@ -235,7 +276,10 @@ class signalR {
 
     static vipReserve($spId, $docId) {
         if (signalR.connection.id)
-            signalR.hubProxy.invoke("vipReserve", signalR.connection.id, JSON.stringify({"command": "vipReserve", "Data": {"spId": $spId, "docId": $docId}}));
+            signalR.hubProxy.invoke("vipReserve", signalR.connection.id, JSON.stringify({
+                "command": "vipReserve",
+                "Data": {"spId": $spId, "docId": $docId}
+            }));
     };
 }
 

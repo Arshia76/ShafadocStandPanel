@@ -13,6 +13,8 @@ import Notif from "../../../Components/Notif";
 import BackToMainMenu from "../../../backToMainMenu";
 import {updateUserDataEntry} from "../../../Redux/Actions/base";
 import service from "../../../service";
+import {api} from '../../../api';
+import moment from 'jalali-moment';
 
 class ModalPayment extends MyComponent {
     constructor(props) {
@@ -136,6 +138,8 @@ class ModalPayment extends MyComponent {
         const {props} = this;
         const {setting} = props;
         const {userDataEntry} = props.base;
+        let isSpecial = userDataEntry.specialClinic;
+
         const chargeAmount = userDataEntry.reciept ? setting.chargeAmount ? userDataEntry.paymentData?.chargeAmount : 0 : setting.chargeAmountReserve ? userDataEntry.paymentData?.chargeAmount : 0;
         let zeroPrice;
         if (userDataEntry.reciept) {
@@ -164,50 +168,193 @@ class ModalPayment extends MyComponent {
         else {
             this.setState({paying: true});
 
-            Main.callPos(setting?.multiAccountPayment, setting.posServerIp, price.toString(), `${setting.reservePrice ? userDataEntry.paymentData?.priceAmount : 1},${userDataEntry.paymentData?.chargeAmount}`, userDataEntry.nationalCode || '')
-                .then(data => {
-                    if (this.unmounted)
-                        return;
+            if (setting.paymentMethodId === '1') {
+                console.log('called behpardakht')
 
-                    this.setState({paying: false});
-                    console.log('pos data', data);
-
-                    if (data?.result?.ResponseCode === '00') {
-                        props.updateUserDataEntry({transactionId: data?.result?.RRN});
-
-                        signalR.setPayData({
-                            Response_Code: data?.result?.ResponseCode,
-                            Response_Description: data?.result?.ResponseDescription,
-                            Card_Number_Mask: data?.result?.CardNumberMask,
-                            Card_Number_Hash_Sha1: data?.result?.CardNumberHash_Sha1,
-                            Trace_Number: data?.result?.TraceNumber,
-                            Txn_Date: data?.result?.TxnDate,
-                            RRN: data?.result?.RRN,
-                            Terminal_Id: data?.result?.TerminalId,
-                            Serial_Id: data?.result?.SerialId,
-                            Req_Amount: data?.result?.ReqAmount || 0,
-                            POS_Version: data?.result?.POS_Version,
-                            Code_Meli: userDataEntry?.nationalCode || '',
-                            Kiosk_Num: setting.kioskNumber,
-                            Pos_Ip: data?.result?.PayId,
-                            Service_Id: userDataEntry.doctor?.id
-                        });
-
-                        requestAnimationFrame(_ => {
-                            this.close(true);
-                        });
+                if (setting?.multiAccountPayment) {
+                    console.log('called multi pay')
+                    let data;
+                    if(isSpecial) {
+                        data = {
+                            ServiceCode: '4',
+                            TotalAmount: price.toString(),
+                            RequestList: [
+                                {AccountID: setting.accountIdHospital, Amount: (price - chargeAmount).toString()},
+                                {AccountID: setting.accountIdShafadoc, Amount: chargeAmount.toString()},
+                            ],
+                            PrintDetail: '1',
+                        }
                     } else {
-                        new Notif({message: 'پرداخت غیر موفق دوباره امتحان کنید.', theme: 'error'}).show();
+                        data = {
+                            ServiceCode: '4',
+                            TotalAmount: price.toString(),
+                            RequestList: [
+                                {AccountID: setting.accountIdHospital, Amount: (price - chargeAmount).toString()},
+                                {AccountID: setting.accountIdShafadoc, Amount: chargeAmount.toString()},
+                            ],
+                            PrintDetail: '1',
+                        }
                     }
-                })
-                .catch(message => {
-                    if (this.unmounted)
-                        return;
+                    console.log(data)
+                    console.log(JSON.stringify(data))
 
-                    this.setState({paying: false});
+                    api.multiAccountPayment(setting.posServerIp, data)
+                        .then(data => {
+                            if (this.unmounted)
+                                return;
 
-                    new Notif({message, theme: 'error'}).show();
-                });
+                            this.setState({paying: false});
+                            console.log('pos data', data);
+                            if (data.ReturnCode == 100) {
+                                props.updateUserDataEntry({transactionId: data?.RRN});
+
+                                signalR.setPayData({
+                                    Response_Code: data?.ReturnCode,
+                                    Response_Description: data?.result?.ResponseDescription,
+                                    Card_Number_Mask: data?.result?.CardNumberMask,
+                                    Card_Number_Hash_Sha1: data?.result?.CardNumberHash_Sha1,
+                                    Trace_Number: data?.result?.TraceNumber,
+                                    Txn_Date: data?.result?.TxnDate,
+                                    RRN: data?.result?.RRN,
+                                    Terminal_Id: data?.result?.TerminalId,
+                                    Serial_Id: data?.result?.SerialId,
+                                    Req_Amount: data?.result?.ReqAmount || 0,
+                                    POS_Version: data?.result?.POS_Version,
+                                    Code_Meli: userDataEntry?.nationalCode || '',
+                                    Kiosk_Num: setting.kioskNumber,
+                                    Pos_Ip: data?.result?.PayId,
+                                    Service_Id: userDataEntry.doctor?.id
+                                });
+
+                                requestAnimationFrame(_ => {
+                                    this.close(true);
+                                });
+                            } else {
+                                new Notif({message: 'پرداخت غیر موفق دوباره امتحان کنید.', theme: 'error'}).show();
+                            }
+                        })
+                        .catch(err => {
+                            if (this.unmounted)
+                                return;
+
+                            this.setState({paying: false});
+
+                            new Notif({message: err, theme: 'error'}).show();
+                            console.log('failed')
+                        })
+                } else {
+                    let data;
+                    if (isSpecial) {
+                        console.log('called special payment--one payment')
+                        data = {
+                            ServiceCode: '2',
+                            Amount: price.toString(),
+                            AccountID: setting.accountIdHospital,
+                        }
+                    } else {
+                        console.log('called normal payment--one payment')
+                        data = {
+                            ServiceCode: '2',
+                            Amount: price.toString(),
+                            AccountID: setting.accountIdHospital
+                        }
+                    }
+                    console.log('called one pay')
+
+
+                    api.oneAccountPayment(setting.posServerIp, data)
+                        .then(data => {
+                            if (this.unmounted)
+                                return;
+
+                            this.setState({paying: false});
+                            console.log('pos data', data);
+                            if (data.ReturnCode == 100) {
+                                props.updateUserDataEntry({transactionId: data?.SerialTransaction});
+
+                                signalR.setPayData({
+                                    Response_Code: data?.ReturnCode,
+                                    Response_Description: data?.ReasonCode,
+                                    Card_Number_Mask: data?.PAN,
+                                    Card_Number_Hash_Sha1: data?.PAN,
+                                    Trace_Number: data?.TraceNumber,
+                                    Txn_Date: data?.TransactionDate,
+                                    RRN: data?.SerialTransaction,
+                                    Terminal_Id: data?.PcID,
+                                    Serial_Id: data?.result?.SerialId,
+                                    Req_Amount: data?.TotalAmount || 0,
+                                    POS_Version: data?.result?.POS_Version,
+                                    Code_Meli: userDataEntry?.nationalCode || '',
+                                    Kiosk_Num: setting?.kioskNumber,
+                                    Pos_Ip: data?.TotalAmount || '0',
+                                    Service_Id: userDataEntry.doctor?.id
+                                });
+
+                                requestAnimationFrame(_ => {
+                                    this.close(true);
+                                });
+                            } else {
+                                new Notif({message: 'پرداخت غیر موفق دوباره امتحان کنید.', theme: 'error'}).show();
+                            }
+
+                        })
+                        .catch(err => {
+                            if (this.unmounted)
+                                return;
+
+                            this.setState({paying: false});
+
+                            new Notif({message: err, theme: 'error'}).show();
+                            console.log('failed')
+                        })
+                }
+
+            } else if (setting.paymentMethodId === '2') {
+                Main.callPos(setting?.multiAccountPayment, setting.posServerIp, price.toString(), `${setting.reservePrice ? userDataEntry.paymentData?.priceAmount : 1},${userDataEntry.paymentData?.chargeAmount}`, userDataEntry.nationalCode || '')
+                    .then(data => {
+                        if (this.unmounted)
+                            return;
+
+                        this.setState({paying: false});
+                        console.log('pos data', data);
+
+                        if (data?.result?.ResponseCode === '00') {
+                            props.updateUserDataEntry({transactionId: data?.result?.RRN});
+
+                            signalR.setPayData({
+                                Response_Code: data?.ReturnCode,
+                                Response_Description: data?.ReasonCode,
+                                Card_Number_Mask: data?.PAN,
+                                Card_Number_Hash_Sha1: data?.PAN,
+                                Trace_Number: data?.TraceNumber,
+                                Txn_Date: data?.TransactionDate,
+                                RRN: data?.SerialTransaction,
+                                Terminal_Id: data?.PcID,
+                                Serial_Id: data?.result?.SerialId,
+                                Req_Amount: data?.TotalAmount || 0,
+                                POS_Version: data?.result?.POS_Version,
+                                Code_Meli: userDataEntry?.nationalCode || '',
+                                Kiosk_Num: setting?.kioskNumber,
+                                Pos_Ip: data?.TotalAmount || '0',
+                                Service_Id: userDataEntry.doctor?.id
+                            });
+
+                            requestAnimationFrame(_ => {
+                                this.close(true);
+                            });
+                        } else {
+                            new Notif({message: 'پرداخت غیر موفق دوباره امتحان کنید.', theme: 'error'}).show();
+                        }
+                    })
+                    .catch(message => {
+                        if (this.unmounted)
+                            return;
+
+                        this.setState({paying: false});
+
+                        new Notif({message, theme: 'error'}).show();
+                    });
+            }
         }
     }
 

@@ -13,8 +13,10 @@ const initialState = {
     futureSpecialities: [],
     doctors: [],
     insurances: [],
+    filteredSpecialties:null,
     unreserved: {},
     userDataEntry: {
+        specialClinic:false,
         reciept: null,
         darmangah: null, // MORNING, EVENING, FUTURE
         nationalCode: null,

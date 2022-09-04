@@ -11,6 +11,7 @@ import {updateBase, updateUserDataEntry} from '../../../Redux/Actions/base';
 import BackToMainMenu from "../../../backToMainMenu";
 import {api} from "../../../api";
 import {futureReserves} from "../../../db";
+import Main from "../../../ElectronLayer/Main";
 
 class PageDarmangah extends MyComponent {
     constructor(props) {
@@ -32,6 +33,8 @@ class PageDarmangah extends MyComponent {
 
     componentDidMount() {
         const {props} = this;
+        const {setting} = props;
+        const {updateBase} = props;
 
         BackToMainMenu.setTimer(this);
 
@@ -68,7 +71,6 @@ class PageDarmangah extends MyComponent {
         };
         signalR.setSpesSecond = (specialities, flag, startTime) => {
             this.setState({eveningLoading: false});
-
             specialities = specialities.map(item => ({
                 id: item.Id,
                 icon: `data:image/png;base64,${item.Image}`,
@@ -100,7 +102,17 @@ class PageDarmangah extends MyComponent {
 
         signalR.getSpesFirst();
         signalR.getSpesSecond();
-        this.getFutureReservationData();
+        Main.getSpecialityMap(setting.specialityMapPath)
+            .then(data => {
+                console.log(data);
+                this.getFutureReservationData(data);
+                updateBase({filteredSpecialties: data})
+            })
+            .catch(err => {
+                console.log('آدرسی برای نقشه های درمانگاه انتخاب نشده است');
+                console.log(err);
+                this.getFutureReservationData();
+            });
     }
 
     componentWillUnmount() {
@@ -152,11 +164,11 @@ class PageDarmangah extends MyComponent {
         props.history.push(Resource.Route.SPECIALITIES);
     }
 
-    getFutureReservationData() {
+    getFutureReservationData(data) {
         const {props} = this;
         this.setState({futureLoading: true});
 
-        api.getList({nodeId: props.setting.nodeId})
+        api.getList({nodeId: props.setting.nodeId, specialties: data || null})
             .then(result => {
                 this.setState({futureLoading: false, futureDisabled: false});
                 props.updateBase({

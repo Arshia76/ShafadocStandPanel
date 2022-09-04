@@ -45,6 +45,13 @@ class PageReserveFinalization extends MyComponent {
 
     componentDidMount() {
         super.componentDidMount();
+        const {base, setting, updateUserDataEntry} = this.props;
+        const {userDataEntry} = base;
+
+        if ((userDataEntry.darmangah === 'EVENING' && moment(`2022-08-21 ${userDataEntry?.doctor?.startTime}`).isSameOrAfter(moment(`2022-08-21 ${setting?.eveningStartTime}`)))
+            || (userDataEntry.darmangah === 'FUTURE' && moment(`2022-08-21 ${userDataEntry?.reserveTime?.time}`).isSameOrAfter(moment(`2022-08-21 ${setting?.eveningStartTime}`)))) {
+            updateUserDataEntry({specialClinic: true});
+        }
 
         setTimeout(_ => {
             this.getUserData();
@@ -81,14 +88,15 @@ class PageReserveFinalization extends MyComponent {
                     <CheckList className={'mar-b-20'} title={`ملیت بیمار: ${nationality || ' . . .'}`}
                                checked={Boolean(nationality)}/>
                     {userDataEntry.nationality !== 'FOREIGN' &&
-                    <CheckList className={'mar-b-20'} title={`کد ملی بیمار: ${userDataEntry.nationalCode || ' . . .'}`}
-                               checked={Boolean(userDataEntry.nationalCode)}/>}
+                        <CheckList className={'mar-b-20'}
+                                   title={`کد ملی بیمار: ${userDataEntry.nationalCode || ' . . .'}`}
+                                   checked={Boolean(userDataEntry.nationalCode)}/>}
                     {userDataEntry.nationality !== 'FOREIGN' && <CheckList className={'mar-b-20'}
                                                                            title={`نام بیمار: ${userDataEntry.firstName ? `${userDataEntry.firstName} ${userDataEntry.lastName}` : ' . . .'}`}
                                                                            checked={Boolean(userDataEntry.firstName)}/>}
                     {userDataEntry.nationality !== 'IRANIAN' &&
-                    <CheckList className={'mar-b-20'} title={`بیمه بیمار: ${foreignInsurance || ' . . .'}`}
-                               checked={Boolean(foreignInsurance)}/>}
+                        <CheckList className={'mar-b-20'} title={`بیمه بیمار: ${foreignInsurance || ' . . .'}`}
+                                   checked={Boolean(foreignInsurance)}/>}
                     {userDataEntry.nationality !== 'FOREIGN' && <CheckList className={'mar-b-20'}
                                                                            title={`بیمه بیمار: ${userDataEntry.standardInsurance?.name || userDataEntry.shafadocInsurance?.name || ' . . .'}`}
                                                                            checked={Boolean(userDataEntry.standardInsurance.name)}/>}
@@ -246,7 +254,7 @@ class PageReserveFinalization extends MyComponent {
     queueReserve() {
         setTimeout(_ => {
             const {props} = this;
-            const {setting} = props;
+            const {setting,base} = props;
             const {userDataEntry} = props.base;
 
             if (userDataEntry.darmangah === 'FUTURE') {
@@ -366,7 +374,7 @@ class PageReserveFinalization extends MyComponent {
                             docId: userDataEntry.doctor.id.toString(),
                             docCode: userDataEntry.doctor.code,
                             ofTime: userDataEntry.doctor.startTime,
-                            specialtySlug: userDataEntry.doctor.spSlug.toString(),
+                            specialtySlug: userDataEntry.specialClinic ? setting.clinicLocationId.toString() : userDataEntry.doctor.spSlug.toString(),
                             patientCodeMelli: userDataEntry.nationalCode,
                             turnNo: userDataEntry.resCount || data.ResCount,
                             paymentAmount: setting.reservePrice ? userDataEntry.paymentData.priceAmount.toString() : '0',

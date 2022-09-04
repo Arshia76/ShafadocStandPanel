@@ -60,7 +60,9 @@ class PageSetting extends MyComponent {
             <Input className={'fb-20 pad-8'} id={'result-path'} placeholder={'آدرس فایل result.json'} label={'آدرس فایل result.json'} value={setting.resultPath} onDoubleClick={this.resultBrowsePath.bind(this)} onChange={this.inputChangeHandler.bind(this, 'resultPath')}/>
             <Input className={'fb-20 pad-8'} id={'person-path'} placeholder={'آدرس فایل person.json'} label={'آدرس فایل person.json'} value={setting.personPath} onDoubleClick={this.personBrowsePath.bind(this)} onChange={this.inputChangeHandler.bind(this, 'personPath')}/>
             <Input className={'fb-20 pad-8'} id={'edge-shift-path'} placeholder={'آدرس فایل edgeShiftPath.json'} label={'آدرس فایل edgeShiftPath.json'} value={setting.edgeShiftPath} onDoubleClick={this.edgeShiftBrowsePath.bind(this)} onChange={this.inputChangeHandler.bind(this, 'edgeShiftPath')}/>
-            <Input className={'fb-20 pad-8'} id={'insurance-map-path'} placeholder={'آدرس فایل نقشه بیمه های'} label={'آدرس فایل نقشه بیمه های'} value={setting.insuranceMapPath} onDoubleClick={this.insuranceMapBrowsePath.bind(this)} onChange={this.inputChangeHandler.bind(this, 'insuranceMapPath')}/>
+            <Input className={'fb-20 pad-8'} id={'insurance-map-path'} placeholder={'آدرس فایل نقشه های بیمه'} label={'آدرس فایل نقشه های بیمه'} value={setting.insuranceMapPath} onDoubleClick={this.insuranceMapBrowsePath.bind(this)} onChange={this.inputChangeHandler.bind(this, 'insuranceMapPath')}/>
+            <Input className={'fb-20 pad-8'} id={'speciality-map-path'} placeholder={'آدرس فایل نقشه های درمانگاه'} label={'آدرس فایل نقشه های درمانگاه'} value={setting.specialityMapPath} onDoubleClick={this.specialityMapBrowsePath.bind(this)} onChange={this.inputChangeHandler.bind(this, 'specialityMapPath')}/>
+            <Input className={'fb-20 pad-8'} id={'foreign-map-path'} placeholder={'آدرس فایل نقشه های اتباع '} label={'آدرس فایل نقشه های اتباع'} value={setting.foreignMapPath} onDoubleClick={this.foreignMapBrowsePath.bind(this)} onChange={this.inputChangeHandler.bind(this, 'foreignMapPath')}/>
             <Input className={'fb-20 pad-8'} id={'report-layout-path'} placeholder={'آدرس قالب چاپ قبض'} label={'آدرس قالب چاپ قبض'} value={setting.reportLayoutPath} onDoubleClick={this.reportLayoutBrowsePath.bind(this)} onChange={this.inputChangeHandler.bind(this, 'reportLayoutPath')}/>
             <Input className={'fb-20 pad-8'} id={'report2-layout-path'} placeholder={' آدرس قالب چاپ قبض حضوری'} label={' آدرس قالب چاپ قبض حضوری'} value={setting.report2LayoutPath} onDoubleClick={this.report2LayoutBrowsePath.bind(this)} onChange={this.inputChangeHandler.bind(this, 'report2LayoutPath')}/>
             <Input className={'fb-20 pad-8'} id={'foreign-client-prevent'} type={'text'} placeholder={'در صورت افزودن متن اجازه دریافت نوبت به بیماران اتباع داده نمی شود'} label={'در صورت افزودن متن اجازه دریافت نوبت به بیماران اتباع داده نمی شود'} value={setting.foreignClientPrevent} onChange={this.inputChangeHandler.bind(this, 'foreignClientPrevent')}/>
@@ -68,9 +70,14 @@ class PageSetting extends MyComponent {
             <Input className={'fb-10 pad-8'} id={'national-code-usage-limit'} type={'number'} placeholder={'دفعات تکرار امکان استفاده از کدملی تکراری'} label={'دفعات تکرار امکان استفاده از کدملی تکراری'} value={setting.nationalCodeUsageLimit} onChange={this.inputChangeHandler.bind(this, 'nationalCodeUsageLimit')}/>
             <Input className={'fb-5 pad-8'} id={'node-id'} type={'number'} placeholder={'شماره مرکز'} label={'شماره مرکز'} value={setting.nodeId} onChange={this.inputChangeHandler.bind(this, 'nodeId')}/>
             <Input className={'fb-5 pad-8'} id={'kiosk-number'} type={'number'} placeholder={'شماره کیوسک'} label={'شماره کیوسک'} value={setting.kioskNumber} onChange={this.inputChangeHandler.bind(this, 'kioskNumber')}/>
+            <Input className={'fb-5 pad-8'} id={'payment-method-id'} type={'number'} placeholder={'شناسه نوع پرداخت'} label={'شناسه نوع پرداخت'} value={setting.paymentMethodId} onChange={this.inputChangeHandler.bind(this, 'paymentMethodId')}/>
             <Input className={'fb-5 pad-8'} id={'psychiatrist-id'} type={'number'} placeholder={'شناسه روانپزشک'} label={'شناسه روانپزشک'} value={setting.psychiatristId} onChange={this.inputChangeHandler.bind(this, 'psychiatristId')}/>
-            <Input className={'fb-5 pad-8'} id={'foreigenerCode'} type={'number'} placeholder={'کد اتباع'} label={'کد اتباع'} value={setting.foreigenerCode} onChange={this.inputChangeHandler.bind(this, 'foreigenerCode')}/>
             <Input className={'fb-5 pad-8'} id={'foreigenerCodeAzad'} type={'number'} placeholder={'کد اتباع آزاد'} label={'کد اتباع آزاد'} value={setting.foreigenerCodeAzad} onChange={this.inputChangeHandler.bind(this, 'foreigenerCodeAzad')}/>
+            <Input className={'fb-10 pad-8'} id={'account-id-hospital'} type={'number'} placeholder={'شناسه حساب بیمارستان'} label={'شناسه حساب بیمارستان'} value={setting.accountIdHospital} onChange={this.inputChangeHandler.bind(this, 'accountIdHospital')}/>
+            <Input className={'fb-10 pad-8'} id={'account-id-special-clinic'} type={'number'} placeholder={'شناسه حساب کلینیک ویژه عصر'} label={'شناسه حساب کلینیک ویژه عصر'} value={setting.accountIdSpecialClinic} onChange={this.inputChangeHandler.bind(this, 'accountIdSpecialClinic')}/>
+            <Input className={'fb-10 pad-8'} id={'account-id-shafadoc'} type={'number'} placeholder={'شناسه حساب شفاداک'} label={'شناسه حساب شفاداک'} value={setting.accountIdShafadoc} onChange={this.inputChangeHandler.bind(this, 'accountIdShafadoc')}/>
+            <Input className={'fb-10 pad-8'} id={'evening-start-time'} type={'text'} placeholder={'ساعت شروع درمانگاه عصر'} label={'ساعت شروع درمانگاه عصر'} value={setting.eveningStartTime} onChange={this.inputChangeHandler.bind(this, 'eveningStartTime')}/>
+            <Input className={'fb-10 pad-8'} id={'special-clinic-location-id'} type={'text'} placeholder={'شناسه کلینیک ویژه عصر'} label={'شناسه کلینیک ویژه عصر'} value={setting.clinicLocationId} onChange={this.inputChangeHandler.bind(this, 'clinicLocationId')}/>
             <div className={'checkbox fb-20 pad-8'}>
                 <input type="checkbox" id={'national-code-validation-check'} checked={setting.nationalCodeValidationCheck} onChange={this.checkChangeHandler.bind(this, 'nationalCodeValidationCheck')}/>
                 <label htmlFor="national-code-validation-check">بررسی صحت کدملی وارد شده.</label>
@@ -131,6 +138,10 @@ class PageSetting extends MyComponent {
                 <input type="checkbox" id={'disableReciept'} name={'disableReciept'} checked={setting.disableReciept} onChange={this.checkChangeHandler.bind(this,  'disableReciept')}/>
                 <label htmlFor="insurance-inquiry-type1">متوقف کردن دریافت قبض برای رزرو اینترنتی / تلفنی</label>
             </div>
+            <div className={'checkbox fb-20 pad-8'}>
+                <input type="checkbox" id={'showForeignInsuranceList'} name={'showForeignInsuranceList'} checked={setting.showForeignInsuranceList} onChange={this.checkChangeHandler.bind(this,  'showForeignInsuranceList')}/>
+                <label htmlFor="insurance-inquiry-type1">نشان دادن لیست بیمه های اتباع</label>
+            </div>
             <div className={'checkbox fb-10 pad-8'}>
                 <input type="checkbox" id={'insurance-inquiry-type1'} name={'insuranceInquiryType'} checked={setting.DITAS} onChange={this.checkChangeHandler.bind(this,  'DITAS')}/>
                 <label htmlFor="insurance-inquiry-type1">استعلام از دیتاس 1 (توکن)</label>
@@ -138,6 +149,10 @@ class PageSetting extends MyComponent {
             <div className={'checkbox fb-10 pad-8'}>
                 <input type="checkbox" id={'insurance-inquiry-type2'} name={'insuranceInquiryType'} checked={setting.DIRECT_INQUIRY} onChange={this.checkChangeHandler.bind(this,  'DIRECT_INQUIRY')}/>
                 <label htmlFor="insurance-inquiry-type2">استعلام از دیتاس 2 (api)</label>
+            </div>
+            <div className={'checkbox fb-10 pad-8'}>
+                <input type="checkbox" id={'insurance-inquiry-salamat'} name={'insuranceInquiryType'} checked={setting.SALAMAT_INQUIRY} onChange={this.checkChangeHandler.bind(this,  'SALAMAT_INQUIRY')}/>
+                <label htmlFor="insurance-inquiry-salamat">استفاده از استعلام سلامت</label>
             </div>
             {/*<div className={'radio fb-10 pad-8'}>*/}
             {/*    <input type="radio" id={'insurance-inquiry-type1'} name={'insuranceInquiryType'} checked={setting.insuranceInquiryType === 'DITAS'} onChange={this.inputChangeHandler.bind(this, 'insuranceInquiryType', 'DITAS')}/>*/}
@@ -228,6 +243,22 @@ class PageSetting extends MyComponent {
             .then(path => {
                 if (path)
                     this.inputChangeHandler('insuranceMapPath', path);
+            });
+    }
+
+    specialityMapBrowsePath() {
+        Main.browse()
+            .then(path => {
+                if (path)
+                    this.inputChangeHandler('specialityMapPath', path);
+            });
+    }
+
+    foreignMapBrowsePath() {
+        Main.browse()
+            .then(path => {
+                if (path)
+                    this.inputChangeHandler('foreignMapPath', path);
             });
     }
 

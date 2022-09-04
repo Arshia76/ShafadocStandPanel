@@ -138,8 +138,7 @@ class Layout extends MyComponent {
 
     sendReserveToShafadoc() {
         const {props} = this;
-        const {setting, base} = props;
-
+        const {setting} = props;
         if (setting.shafadocDomain)
             todayReserves.list()
                 .then(list => {

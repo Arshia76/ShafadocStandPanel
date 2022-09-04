@@ -28,6 +28,13 @@ class PageDoctors extends MyComponent {
 
         BackToMainMenu.setTimer(this);
 
+        // signalR.setAccountingSettings = (tid) => {
+        //     if (tid.length) {
+        //         console.log('called special')
+        //         props.updateUserDataEntry({speciality: {...userDataEntry.speciality, special: true}});
+        //     }
+        // }
+
         signalR.setDocOfSpFirstShift = (doctors) => {
             doctors = doctors.map(item => ({
                 id: item.DocId,
@@ -75,6 +82,7 @@ class PageDoctors extends MyComponent {
         } else if (userDataEntry.darmangah === 'EVENING') {
             signalR.getDocOfSpSecondShift(userDataEntry.speciality.id);
         }
+        // signalR.getAccountingSettings(userDataEntry.speciality.id)
     }
 
     componentWillUnmount() {
@@ -86,12 +94,19 @@ class PageDoctors extends MyComponent {
         const {userDataEntry} = props.base;
 
         return <Page className={'PageDoctors dis-f'} id={'PageDoctors'}>
-            <div className={'fb-20 dis-f'} style={{maxHeight: 'calc(100vh - 150px)', overflow: 'auto'}} onClick={_ => BackToMainMenu.resetTimer()}>
+            <div className={'fb-20 dis-f'} style={{maxHeight: 'calc(100vh - 150px)', overflow: 'auto'}}
+                 onClick={_ => BackToMainMenu.resetTimer()}>
                 {state.loading ?
                     <Splashscreen title={'در حال دریافت لیست پزشکان'}/> :
                     <React.Fragment>
-                        {userDataEntry.darmangah === 'MORNING' || userDataEntry.darmangah === 'EVENING' ? state.doctors.map((item, index) => <div key={index} className={'fb-10 fb-5x-20 pad-8'}><DoctorCard data={item} onClick={this.cardClickHandler.bind(this)}/></div>) : null}
-                        {userDataEntry.darmangah === 'FUTURE' ? props.base.doctors?.[userDataEntry?.speciality?.id].map((item, index) => <div key={index} className={'fb-10 fb-5x-20 pad-8'}><DoctorCard data={item} onClick={this.cardClickHandler.bind(this)}/></div>) : null}
+                        {userDataEntry.darmangah === 'MORNING' || userDataEntry.darmangah === 'EVENING' ? state.doctors.map((item, index) =>
+                            <div key={index} className={'fb-10 fb-5x-20 pad-8'}><DoctorCard data={item}
+                                                                                            onClick={this.cardClickHandler.bind(this)}/>
+                            </div>) : null}
+                        {userDataEntry.darmangah === 'FUTURE' ? props.base.doctors?.[userDataEntry?.speciality?.id].map((item, index) =>
+                            <div key={index} className={'fb-10 fb-5x-20 pad-8'}><DoctorCard data={item}
+                                                                                            onClick={this.cardClickHandler.bind(this)}/>
+                            </div>) : null}
                     </React.Fragment>}
             </div>
             <div className="dis-f" style={{width: '100%', marginTop: 12}}>

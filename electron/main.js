@@ -10,10 +10,10 @@ var callDll = edge.func(path.join(__dirname, 'dll/electronlib.dll'));
 //shell.config.execPath = shell.which('powershell');
 shell.config.execPath = path.join('C:', 'Program Files', 'nodejs', 'node.exe');
 const {exec} = require("child_process");
+const fs = require("fs");
 
 let mainWindow;
 console.log(__dirname);
-
 
 
 const createWindow = () => {
@@ -56,7 +56,7 @@ const createWindow = () => {
     });
 
     mainWindow.on('closed', () => {
-         mainWindow = null;
+        mainWindow = null;
         // e.preventDefault();
         // mainWindow.destroy();
     });
@@ -106,7 +106,15 @@ const createWindow = () => {
     ipcMain.on('getPriceAmount', (event, nodeId, docId, insurId, age, priceAmount, shafaDocUrl) => {
         event.preventDefault();
 
-        const payload = {func: 'getKodakanPrice', nodeId, docId: docId, insurId:insurId.toString(), age, priceAmount, shafaDocUrl};
+        const payload = {
+            func: 'getKodakanPrice',
+            nodeId,
+            docId: docId,
+            insurId: insurId.toString(),
+            age,
+            priceAmount,
+            shafaDocUrl
+        };
         console.log(payload);
 
         callDll(payload, function (error, result) {
@@ -120,7 +128,14 @@ const createWindow = () => {
     ipcMain.on('getPsychoPriceAmount', (event, nodeId, docId, insurId, priceAmount, shafaDocUrl) => {
         event.preventDefault();
 
-        const payload = {func: 'getFirstTimePsychoPrice', nodeId, docId: docId, insurId:insurId.toString(), priceAmount, shafaDocUrl};
+        const payload = {
+            func: 'getFirstTimePsychoPrice',
+            nodeId,
+            docId: docId,
+            insurId: insurId.toString(),
+            priceAmount,
+            shafaDocUrl
+        };
         console.log(payload);
 
         callDll(payload, function (error, result) {
@@ -194,6 +209,35 @@ const createWindow = () => {
             event.reply('getInsuranceMap', data);
         } catch (e) {
             event.reply('getInsuranceMap', null);
+        }
+    });
+
+    ipcMain.on('getSpecialityMap', (event, path) => {
+        event.preventDefault();
+        console.log('getSpecialityMap', path);
+        try {
+            const fs = require('fs');
+            let rawdata = fs.readFileSync(path);
+            let data = JSON.parse(rawdata);
+            console.log(data);
+            event.reply('getSpecialityMap', data);
+        } catch (e) {
+            event.reply('getSpecialityMap', null);
+        }
+    });
+
+    ipcMain.on('getForeignMap', (event, path) => {
+        event.preventDefault();
+        console.log('getForeignMap', path);
+        try {
+            const fs = require('fs');
+            let rawdata = fs.readFileSync(path);
+            let data = JSON.parse(rawdata);
+            console.log(data);
+            event.reply('getForeignMap', data);
+        } catch (e) {
+            console.log(e)
+            event.reply('getForeignMap', null);
         }
     });
 
