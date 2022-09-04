@@ -1,0 +1,170 @@
+{
+  "result": {
+    "data": {
+      "data": [
+        {
+          "nationalcode": "5040820259",
+          "lastName": "قادری",
+          "firstName": "ایلکین",
+          "fatherName": "",
+          "idNumber": "",
+          "responsibleFirstName": "کاوه",
+          "responsibleLastName": "قادری",
+          "birthDate": {
+            "year": 1391,
+            "month": 2,
+            "day": 28,
+            "isoString": "1391/02/28"
+          },
+          "deathDate": {},
+          "gender": {
+            "value": "مرد",
+            "terminology_id": "thritaEHR.gender",
+            "coded_string": "1"
+          },
+          "maritalStatus": {
+            "value": "",
+            "terminology_id": "",
+            "coded_string": ""
+          },
+          "insurer": {
+            "value": "خدمات درمانی",
+            "terminology_id": "thritaEHR.Insurer",
+            "coded_string": "2"
+          },
+          "insuranceNumber": {
+            "issuer": "",
+            "assigner": "",
+            "id": "5040820259",
+            "type": ""
+          },
+          "insuranceNumber2": {
+            "issuer": "",
+            "assigner": "",
+            "id": "",
+            "type": ""
+          },
+          "insurerBox": {
+            "value": "همگانی",
+            "terminology_id": "thritaEHR.insuranceBox",
+            "coded_string": "26.4"
+          },
+          "expirationDate": {
+            "year": 1400,
+            "month": 6,
+            "day": 31,
+            "isoString": "1400/06/31"
+          },
+          "provinceInsurance": {
+            "value": "اردبیل",
+            "terminology_id": "",
+            "coded_string": "25"
+          },
+          "inquiryID": "6GC75GT",
+          "postalCode": "",
+          "province": "اردبیل",
+          "provinceCode": "25",
+          "branch": "",
+          "branchCode": "",
+          "address": "اردبیل",
+          "errorMessage": "",
+          "extraProperties": [
+            {
+              "element": {
+                "value": "deadDate",
+                "terminology_id": "",
+                "coded_string": ""
+              },
+              "value": ""
+            },
+            {
+              "element": {
+                "value": "RelationTypeofResponsible",
+                "terminology_id": "",
+                "coded_string": "C"
+              },
+              "value": "فرزند"
+            },
+            {
+              "element": {
+                "value": "validFrom",
+                "terminology_id": "",
+                "coded_string": ""
+              },
+              "value": "13970807"
+            },
+            {
+              "element": {
+                "value": "ResponsibleNationalCode",
+                "terminology_id": "",
+                "coded_string": ""
+              },
+              "value": "1461678609"
+            },
+            {
+              "element": {
+                "value": "ResponsibleFullName",
+                "terminology_id": "",
+                "coded_string": ""
+              },
+              "value": ""
+            },
+            {
+              "element": {
+                "value": "CoverageReferenceInternalOwnerId",
+                "terminology_id": "",
+                "coded_string": ""
+              },
+              "value": "108241664"
+            },
+            {
+              "element": {
+                "value": "Covered",
+                "terminology_id": "",
+                "coded_string": ""
+              },
+              "value": "TRUE"
+            },
+            {
+              "element": {
+                "value": "FERANSHIZ",
+                "terminology_id": "",
+                "coded_string": ""
+              },
+              "value": ""
+            },
+            {
+              "element": {
+                "value": "WORKSHOP_NAME",
+                "terminology_id": "",
+                "coded_string": ""
+              },
+              "value": ""
+            },
+            {
+              "element": {
+                "value": "TD",
+                "terminology_id": "BITSA",
+                "coded_string": "TD"
+              },
+              "value": "[\"108241664_D_1_13970807_14000631_همگانی\"]"
+            }
+          ]
+        }
+      ],
+      "isSuccess": true,
+      "waitTime": 0,
+      "statusCode": 0,
+      "message": [
+        "عملیات با موفقیت انجام شد"
+      ]
+    },
+    "status": {
+      "statusCode": 200
+    }
+  },
+  "status": {
+    "statusCode": 200,
+    "message": "OK"
+  }
+}

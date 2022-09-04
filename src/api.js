@@ -24,7 +24,7 @@ class api {
     };
 
     static getInsuranceDataByDitas2(nationalCode) {
-        return new Promise((resolve,reject) => {
+        return new Promise((resolve, reject) => {
             fetch(`${window.setting?.serverDomain}/api.aspx?codeMeli=${nationalCode}&Func=callupInsure`, {
                 method: 'GET',
                 redirect: 'follow'
@@ -45,7 +45,7 @@ class api {
     }
 
     static getInsuranceDataBySalamat(nationalCode) {
-        return new Promise((resolve,reject) => {
+        return new Promise((resolve, reject) => {
             fetch(`${window.setting?.serverDomain}/api.aspx?codeMeli=${nationalCode}&Func=callupInsure&type=salamat`, {
                 method: 'GET',
                 redirect: 'follow'
@@ -65,8 +65,8 @@ class api {
         });
     }
 
-    static getSabtAhvalData(nationalCode,birthDate) {
-        return new Promise((resolve,reject) => {
+    static getSabtAhvalData(nationalCode, birthDate) {
+        return new Promise((resolve, reject) => {
             fetch(`${window.setting?.serverDomain}/api.aspx?codeMeli=${nationalCode}&birthDate=${birthDate}&Func=sabtahval`, {
                 method: 'GET',
                 redirect: 'follow'
@@ -321,6 +321,34 @@ class api {
                     resolve(data)
                 })
                 .catch(err => reject(err))
+        })
+    }
+
+    static checkReserved(props) {
+        const requestOptions = {
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: props,
+            method: 'POST'
+        }
+
+        return new Promise((resolve, reject) => {
+            fetch(`${window?.setting?.shafadocKoudakDomain}/api/kiosk`, requestOptions)
+                .then(res => {
+                    if (res.ok) {
+                        return res.text()
+                    } else {
+                        return reject('نوبت شما برای این پزشک در این تایم قبلا ثبت شده است.')
+                    }
+                }).then(data => {
+                console.log(data);
+                resolve(data)
+            })
+                .catch(err => {
+                    console.log(err);
+                    reject(err)
+                })
         })
     }
 }

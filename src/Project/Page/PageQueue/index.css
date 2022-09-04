@@ -1,0 +1,13 @@
+html{
+    direction: rtl;
+}
+table{
+    direction: rtl;
+}
+table tr td{
+    background-color: #f3f3f3;
+    border-radius: 3px;
+    font-size: 12px;
+    text-align: center;
+    vertical-align: middle;
+}

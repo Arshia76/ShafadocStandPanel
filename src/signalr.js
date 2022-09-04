@@ -23,15 +23,11 @@ class signalR {
             var dvalue = JSON.parse(value);
             signalR.setServices(dvalue["Data"]);
         });
+
         signalR.hubProxy.on("setSpes", (value) => {
             var dvalue = JSON.parse(value);
             signalR.setSpDocs(dvalue["Data"]);
         });
-        signalR.hubProxy.on("setAccountingSettings",(value)=>{
-            var dvalue = JSON.parse(value);
-            signalR.setAccountingSettings(dvalue["Data"]);
-        });
-
         signalR.hubProxy.on("setSpesFirst", (value, flag, startTime) => {
             try {
                 var dvalue = JSON.parse(value);
@@ -106,11 +102,6 @@ class signalR {
     static getDocOfSpSecondShift($spId) {
         if (signalR.connection.id)
             signalR.hubProxy.invoke("getDocOfSpSecondShift", signalR.connection.id, JSON.stringify({"command": "getDocOfSpSecondShift", "Data": {"spId": $spId}}));
-    };
-
-    static getAccountingSettings($tId) {
-        if (signalR.connection.id)
-            signalR.hubProxy.invoke("getAccountingSettings", signalR.connection.id, JSON.stringify({"command": "getAccountingSettings", "Data": {"tId": $tId}}));
     };
 
     static getInternetResInfo($codeMeli) {
@@ -218,8 +209,6 @@ class signalR {
     };
 
     static setDocOfSp = _ => console.log('setDocOfSp');
-
-    static setAccountingSettings=_=>console.log("setAccountingSettings");
 
     static setDocOfSpFirstShift = _ => console.log('setDocOfSpFirstShift');
 

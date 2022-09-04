@@ -8,7 +8,9 @@ import Resource from '../../../Resource';
 import Input from '../../../Components/Input';
 import {connect} from 'react-redux';
 import {addNationalCode, updateUserDataEntry} from '../../../Redux/Actions/base';
+import App from '../../../App';
 import Notif from '../../../Components/Notif';
+import moment from 'jalali-moment';
 import BackToMainMenu from "../../../backToMainMenu";
 import {withRouter} from "react-router-dom";
 

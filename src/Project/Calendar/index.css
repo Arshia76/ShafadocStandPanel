@@ -1,0 +1,88 @@
+.Calendar {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 560px;
+}
+
+.Calendar .Top {
+    display: flex;
+    margin-top: 10px;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+    padding: 0 2px;
+}
+
+.Calendar .Top h2 {
+    font-size: 3em;
+    color: #3e4d5e;
+    flex: 1;
+    text-align: center;
+}
+
+.Calendar .table {
+    border-spacing: 2px;
+    border-collapse: separate;
+    width: 100%;
+    margin-top: 10px;
+}
+
+
+.Calendar .row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    column-gap: 10px;
+    row-gap: 10px;
+}
+
+.Calendar .disabled {
+    opacity: .5;
+    background-color: transparent !important;
+    cursor: not-allowed !important;
+}
+
+.Calendar .table td.reserved {
+    background-color: #3dde6e;
+    /*color: white;*/
+}
+.Calendar .table td.filled {
+    background-color: #f2635d;
+    /*color: white;*/
+}
+.Calendar .table td {
+    color: #3e4d5e;
+    overflow: hidden;
+    line-height: 30px;
+    padding: 15px;
+    font-size: 2.5em;
+    background-color: white;
+    white-space: nowrap;
+    text-align: center;
+    border: 1px solid #e7dbdb;
+    border-radius: 10px;
+    position: relative;
+    height: 60px;
+}
+
+
+.Calendar td:hover {
+    cursor: pointer;
+}
+
+.has-appointment {
+    background-color: hotpink;
+}
+
+
+.Calendar .Calender-week-name {
+    font-size: 1.3em;
+    background-color: #f6f1fe;
+    flex-basis: 14.28%;
+    text-align: center;
+}
+
+.Calendar .Calendar-Item {
+    flex-basis: 14.28%;
+}

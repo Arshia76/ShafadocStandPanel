@@ -1,0 +1,61 @@
+.PageDoctorTime {
+    display: flex;
+    flex-direction: column;
+}
+
+.PageDoctorTime .Card {
+    display: flex;
+    flex-direction: column;
+    font-size: 1.5em;
+}
+
+.PageDoctorTime .Card h2 {
+    font-size: 1.7em;
+}
+
+.PageDoctorTime .Card h4 {
+    margin: 10px 0;
+    color: #888888;
+}
+
+.PageDoctorTime .Card h6 {
+    font-size: 30px;
+    font-weight: 500;
+    color: #555;
+}
+
+.PageDoctorTime .Card .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+
+}
+
+.PageDoctorTime .Card .card-top img {
+    width: 100px;
+    height: 100px;
+    border: 5px solid white;
+    border-radius: 50%;
+}
+
+.PageDoctorTime .Card .card-top div {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.PageDoctorTime .Card .reserve-times {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 25px;
+    font-weight: 500;
+    padding: 10px 10px;
+    color: #555;
+    border-radius: 10px;
+    background-color: white;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px -7px grey;
+    cursor: pointer;
+}
