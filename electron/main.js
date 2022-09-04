@@ -1,6 +1,4 @@
 const {app, BrowserWindow, ipcMain, remote} = require('electron');
-const {autoUpdater} = require('electron-updater');
-const log = require('electron-log');
 const path = require('path');
 const url = require('url');
 var edge = require('electron-edge-js');
@@ -10,16 +8,11 @@ var callDll = edge.func(path.join(__dirname, 'dll/electronlib.dll'));
 //shell.config.execPath = shell.which('powershell');
 shell.config.execPath = path.join('C:', 'Program Files', 'nodejs', 'node.exe');
 const {exec} = require("child_process");
-const fs = require("fs");
 
 let mainWindow;
 console.log(__dirname);
 
-
 const createWindow = () => {
-    autoUpdater.logger = log;
-    autoUpdater.logger.transports.file.level = 'info';
-    log.info('App starting...');
     mainWindow = new BrowserWindow({
         icon: path.join(__dirname + '/icon.ico'),
         title: 'Shafadoc Stand Panel',
@@ -56,7 +49,7 @@ const createWindow = () => {
     });
 
     mainWindow.on('closed', () => {
-        mainWindow = null;
+         mainWindow = null;
         // e.preventDefault();
         // mainWindow.destroy();
     });
@@ -106,15 +99,7 @@ const createWindow = () => {
     ipcMain.on('getPriceAmount', (event, nodeId, docId, insurId, age, priceAmount, shafaDocUrl) => {
         event.preventDefault();
 
-        const payload = {
-            func: 'getKodakanPrice',
-            nodeId,
-            docId: docId,
-            insurId: insurId.toString(),
-            age,
-            priceAmount,
-            shafaDocUrl
-        };
+        const payload = {func: 'getKodakanPrice', nodeId, docId: docId, insurId:insurId.toString(), age, priceAmount, shafaDocUrl};
         console.log(payload);
 
         callDll(payload, function (error, result) {
@@ -128,14 +113,7 @@ const createWindow = () => {
     ipcMain.on('getPsychoPriceAmount', (event, nodeId, docId, insurId, priceAmount, shafaDocUrl) => {
         event.preventDefault();
 
-        const payload = {
-            func: 'getFirstTimePsychoPrice',
-            nodeId,
-            docId: docId,
-            insurId: insurId.toString(),
-            priceAmount,
-            shafaDocUrl
-        };
+        const payload = {func: 'getFirstTimePsychoPrice', nodeId, docId: docId, insurId:insurId.toString(), priceAmount, shafaDocUrl};
         console.log(payload);
 
         callDll(payload, function (error, result) {
@@ -212,35 +190,6 @@ const createWindow = () => {
         }
     });
 
-    ipcMain.on('getSpecialityMap', (event, path) => {
-        event.preventDefault();
-        console.log('getSpecialityMap', path);
-        try {
-            const fs = require('fs');
-            let rawdata = fs.readFileSync(path);
-            let data = JSON.parse(rawdata);
-            console.log(data);
-            event.reply('getSpecialityMap', data);
-        } catch (e) {
-            event.reply('getSpecialityMap', null);
-        }
-    });
-
-    ipcMain.on('getForeignMap', (event, path) => {
-        event.preventDefault();
-        console.log('getForeignMap', path);
-        try {
-            const fs = require('fs');
-            let rawdata = fs.readFileSync(path);
-            let data = JSON.parse(rawdata);
-            console.log(data);
-            event.reply('getForeignMap', data);
-        } catch (e) {
-            console.log(e)
-            event.reply('getForeignMap', null);
-        }
-    });
-
     ipcMain.on('person', (event, nationalCode, birthYear, personPath) => {
         event.preventDefault();
 
@@ -314,37 +263,9 @@ const createWindow = () => {
 
         event.reply('print');
     });
-
-    autoUpdater.checkForUpdates();
 };
 
 app.on('ready', createWindow);
-
-autoUpdater.on("update-available", (_event, releaseNotes, releaseName) => {
-    const dialogOpts = {
-        type: 'info',
-        buttons: ['Ok'],
-        title: 'Application Update',
-        message: process.platform === 'win32' ? releaseNotes : releaseName,
-        detail: 'A new version is being downloaded.'
-    }
-    dialog.showMessageBox(dialogOpts, (response) => {
-
-    });
-})
-
-autoUpdater.on("update-downloaded", (_event, releaseNotes, releaseName) => {
-    const dialogOpts = {
-        type: 'info',
-        buttons: ['Restart', 'Later'],
-        title: 'Application Update',
-        message: process.platform === 'win32' ? releaseNotes : releaseName,
-        detail: 'A new version has been downloaded. Restart the application to apply the updates.'
-    };
-    dialog.showMessageBox(dialogOpts).then((returnValue) => {
-        if (returnValue.response === 0) autoUpdater.quitAndInstall()
-    })
-});
 
 app.on('window-all-closed', () => {
     // if (process.platform !== 'darwin') {

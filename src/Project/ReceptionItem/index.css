@@ -1,0 +1,29 @@
+.ReceptionItem {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    font-size: 30px;
+    padding: 20px 20px;
+    color: #555;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 0 0 10px -7px gray;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.ReceptionItem .ReceptionItem-row {
+    display: flex;
+    align-items: center;
+}
+
+#service {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.21);
+}
+
+
+.ReceptionItem span {
+    font-size: 25px;
+    margin-left: 10px;
+    margin-bottom: 5px;
+}

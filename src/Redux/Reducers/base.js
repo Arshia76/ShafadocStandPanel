@@ -13,17 +13,21 @@ const initialState = {
     futureSpecialities: [],
     doctors: [],
     insurances: [],
-    filteredSpecialties:null,
     unreserved: {},
+    unpaied:false,
     userDataEntry: {
-        specialClinic:false,
         reciept: null,
+        paraclinicPayment:null,
         darmangah: null, // MORNING, EVENING, FUTURE
         nationalCode: null,
         insurance:null,
         nationality: null, // IRANIAN, FOREIGN
         speciality: null,
         firstTimePsychiatristVisit:null,
+        paraclinicData: {
+            pendingReceptions:null,
+            token:null
+        },
         doctor: {
             id:null,
             code:null,

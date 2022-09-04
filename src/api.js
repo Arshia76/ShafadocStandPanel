@@ -193,27 +193,13 @@ class api {
                      *      2 reservable
                      */
                     // فقط موارد قابل رزرو نمایش داده شوند
-                    console.log(props)
-
                     data = data.filter(item => item.reserveStatus === 2);
-                    let listDarmangah;
-                    if (props.specialties && Object.keys(props.specialties).length > 0) {
-                        console.log(props.specialties);
-                        console.log(Object.values(props.specialties));
-                        console.log(data)
-                        listDarmangah = data.filter(item => Object.values(props.specialties).includes(item?.Taxo?.[0]?.taxonomy_id.toString())).map(item => ({
-                            id: item?.Taxo?.[0]?.taxonomy_id || 0,
-                            title: item?.Taxo?.[0]?.taxonomy_name || 'نامشخص',
-                            icon: Resource.IMAGE.DARMANGAH
-                        }));
-                    } else {
-                        listDarmangah = data.map(item => ({
-                            id: item?.Taxo?.[0]?.taxonomy_id || 0,
-                            title: item?.Taxo?.[0]?.taxonomy_name || 'نامشخص',
-                            icon: Resource.IMAGE.DARMANGAH
-                        }));
-                    }
 
+                    let listDarmangah = data.map(item => ({
+                        id: item?.Taxo?.[0]?.taxonomy_id || 0,
+                        title: item?.Taxo?.[0]?.taxonomy_name || 'نامشخص',
+                        icon: Resource.IMAGE.DARMANGAH
+                    }));
 
                     const specialities = [...new Map(listDarmangah.map(item => [item['id'], item])).values()]
 
@@ -338,97 +324,66 @@ class api {
         })
     }
 
-    static oneAccountPayment(address, props) {
+    static paraclinicLogin(props) {
         return new Promise((resolve, reject) => {
-            fetch(address, {
-                method: "POST",
+            fetch(`${window?.setting?.paraclinicPaymentUrl}/login`, {
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json"
+                    'Accept': 'application/json',
                 },
-                body: JSON.stringify(props)
+                body: props
             })
                 .then(response => {
-                    if (response.ok) {
+                    if(response.ok) {
                         return response.json()
-                    } else {
-                        return reject('پرداخت ناموفق لطفا دوباره امتحان کنید.')
+                    }
+                    else {
+                        return reject()
                     }
                 })
-                .then(data => {
-                    console.log(data.ReturnCode)
-                    console.log(data)
-
-                    if (data.ReturnCode == 100) {
-                        console.log(data);
-                        resolve(data)
-                    } else {
-                        console.log(data)
-                        return reject('پرداخت ناموفق لطفا دوباره امتحان کنید.')
-                    }
-                })
-                .catch(err => {
-                    console.log(err)
-                    reject('پرداخت ناموفق لطفا دوباره امتحان کنید.')
-                })
+                .then(data => resolve(data))
+                .catch(e => reject(e))
         })
     }
 
-    static multiAccountPayment(address, props) {
+    static getPendingReserves(nationalCode, token, before, after) {
         return new Promise((resolve, reject) => {
-            fetch(address, {
-                method: "POST",
+            fetch(`${window?.setting?.paraclinicPaymentUrl}/kiosk/receptions?national_id=${nationalCode}&filter[before]=${before}&filter[after]=${after}`, {
+                method: 'GET',
                 headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(props)
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
             })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json()
-                    } else {
-                        return reject('پرداخت ناموفق لطفا دوباره امتحان کنید.')
-                    }
-                })
-                .then(data => {
-                    if (data.ReturnCode == 100) {
-                        console.log(data);
-                        resolve(data)
-                    } else {
-                        console.log(data)
-                        return reject('پرداخت ناموفق لطفا دوباره امتحان کنید.')
-                    }
-                })
-                .catch(err => {
-                    console.log(err);
-                    reject('پرداخت ناموفق لطفا دوباره امتحان کنید.')
-                })
+                .then(response => response.json())
+                .then(data => resolve(data))
+                .catch(e => reject(e))
         })
     }
 
-    static checkReserved(props) {
-        const requestOptions = {
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: props,
-            method: 'POST'
-        }
-
+    static paraclinicPay(props, token) {
         return new Promise((resolve, reject) => {
-            fetch(`${window?.setting?.shafadocKoudakDomain}/api/kiosk`, requestOptions)
-                .then(res => {
-                    if (res.ok) {
-                        return res.text()
-                    } else {
-                        return reject('نوبت شما برای این پزشک در این تایم قبلا ثبت شده است.')
-                    }
-                }).then(data => {
-                console.log(data);
-                resolve(data)
+            fetch(`${window?.setting?.paraclinicPaymentUrl}/kiosk/receptions/pay`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`
+
+                },
+                body: props,
+                redirect: 'follow'
             })
-                .catch(err => {
-                    console.log(err);
-                    reject(err)
+                .then(response => {
+                    if(response.ok) {
+                        return response.text()
+                    } else {
+                        return reject()
+                    }
+                })
+                .then(data => resolve(data))
+                .catch(e => {
+                    console.log(e)
+                    reject(e)
                 })
         })
     }

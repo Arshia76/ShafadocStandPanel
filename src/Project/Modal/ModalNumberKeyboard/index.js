@@ -11,8 +11,7 @@ import {addNationalCode, updateUserDataEntry} from '../../../Redux/Actions/base'
 import BackToMainMenu from "../../../backToMainMenu";
 import {withRouter} from "react-router-dom";
 import Notif from "../../../Components/Notif";
-import BarcodeReader from 'react-barcode-reader';
-import {api} from '../../../api'
+import BarcodeReader from 'react-barcode-reader'
 
 class ModalNumberKeyboard extends MyComponent {
     constructor(props) {
@@ -69,22 +68,15 @@ class ModalNumberKeyboard extends MyComponent {
                 <div className={'row'}><h3 style={{fontSize: '20px'}}>{state.prompt}</h3></div>
                 <div className={'dis-f'}>
                     <div className="fb-8 dis-f pad-4">
-                        <Button className={'fb-20'} theme="red" title={'پاک کردن'} onClick={this.clear.bind(this)}
-                                ref={this.ref.clear} style={{lineHeight: '32px'}}/>
+                        <Button className={'fb-20'} theme="red" title={'پاک کردن'} onClick={this.clear.bind(this)} ref={this.ref.clear} style={{lineHeight: '32px'}}/>
                     </div>
-                    <Input readOnly={true} ref={this.ref.input} placeholder={state.placeholder}
-                           className={'input fb-12 pad-4'} align={'center'} direction={'ltr'} type="text"
-                           mask={state.mask} value={fields.code} style={{fontSize: '30px'}}
-                           onChange={this.setField.bind(this, 'code')}/>
+                    <Input  readOnly={true} ref={this.ref.input} placeholder={state.placeholder} className={'input fb-12 pad-4'} align={'center'} direction={'ltr'} type="text" mask={state.mask} value={fields.code} style={{fontSize: '30px'}}  onChange={this.setField.bind(this, 'code')}/>
                 </div>
                 <div className={'dis-f'} style={{flexDirection: 'column', width: '100%'}}>
                     <div className={'dis-f'}>
-                        <Button className={'flex buttons mar-4'} onClick={this.insert.bind(this, '3')}
-                                theme="blue">3</Button>
-                        <Button className={'flex buttons mar-4'} onClick={this.insert.bind(this, '2')}
-                                theme="blue">2</Button>
-                        <Button className={'flex buttons mar-4'} onClick={this.insert.bind(this, '1')}
-                                theme="blue">1</Button>
+                        <Button className={'flex buttons mar-4'} onClick={this.insert.bind(this, '3')} theme="blue">3</Button>
+                        <Button className={'flex buttons mar-4'} onClick={this.insert.bind(this, '2')} theme="blue">2</Button>
+                        <Button className={'flex buttons mar-4'} onClick={this.insert.bind(this, '1')} theme="blue">1</Button>
                     </div>
                     <div className={'dis-f'}>
                         <Button className={'flex buttons mar-4'} onClick={this.insert.bind(this, '6')}
@@ -104,27 +96,25 @@ class ModalNumberKeyboard extends MyComponent {
                     </div>
                     <div className={'dis-f'}>
                         <Button className={'flex mar-4'} onClick={this.submit.bind(this)} theme="green">ثبت</Button>
-                        <Button className={'flex buttons mar-4'} onClick={this.insert.bind(this, '0')}
-                                theme="blue">0</Button>
-                        <Button className={'flex mar-4'} onClick={this.backToMainMenu.bind(this)}
-                                theme="red">بازگشت</Button>
+                        <Button className={'flex buttons mar-4'} onClick={this.insert.bind(this, '0')} theme="blue">0</Button>
+                        <Button className={'flex mar-4'} onClick={this.backToMainMenu.bind(this)} theme="red">بازگشت</Button>
                     </div>
                 </div>
             </ModalContent>
         </Modal>;
     }
 
-    handleScan(data) {
+    handleScan(data){
         const {updateUserDataEntry} = this.props;
-        this.setState({fields: {code: data}}, () => {
+        this.setState({fields:{code:data}},() => {
             this.submit()
         })
         updateUserDataEntry({
-            nationalCode: data
+            nationalCode:data
         })
     }
 
-    handleError(err) {
+    handleError(err){
         alert(err)
     }
 
@@ -168,11 +158,13 @@ class ModalNumberKeyboard extends MyComponent {
 
         fields.code = (fields.code || '') + $char;
 
-        if (this.props.base.userDataEntry.nationality === 'IRANIAN' && this.state.key !== 'mobile' && this.state.key !== 'birth' && fields.code.length <= 10) {
+        if(this.props.base.userDataEntry.nationality === 'IRANIAN' && this.state.key !== 'mobile' && this.state.key !== 'birth' && fields.code.length <=10 ) {
             this.setState({fields});
-        } else if ((this.props.base.userDataEntry.nationality === 'FOREIGN' && this.state.key !== 'mobile') || this.state.key === 'mobile') {
+        }
+        else if((this.props.base.userDataEntry.nationality === 'FOREIGN' && this.state.key !== 'mobile') || this.state.key === 'mobile' ) {
             this.setState({fields});
-        } else if (this.state.key === 'birth' && fields.code.length <= 8) {
+        }
+        else if (this.state.key === 'birth' && fields.code.length <=8) {
             this.setState({fields});
         }
     }
@@ -188,7 +180,7 @@ class ModalNumberKeyboard extends MyComponent {
                 action,
                 key: data.key,
                 prompt: data.prompt,
-                placeholder: data.placeholder,
+                placeholder:data.placeholder,
                 validator: data.validator,
                 mask: data.mask,
                 fields: {},
@@ -210,45 +202,12 @@ class ModalNumberKeyboard extends MyComponent {
         const code = this.state.fields.code;
         const {state} = this;
         const result = state.validator(code);
-        const {userDataEntry} = this.props.base;
 
-        if (state.key === 'foreignCode' && code.length > 12) {
-            return new Notif({message: 'شناسه اتباع نمی تواند بیشتر از 12 رقم باشد.', theme: 'error'}).show();
-        } else if (typeof result !== "boolean") {
-            return new Notif({message: result, theme: 'error'}).show();
-        } else if (userDataEntry.darmangah === 'FUTURE' && (state.key === 'nationalCode' || state.key === 'foreignCode')) {
-            api.getToken().then(token => {
-                const data = new URLSearchParams();
-                data.append('Data', JSON.stringify({
-                    ftId: userDataEntry.reserveTime.id,
-                    codeMeli: code,
-                    token
-                }));
-                data.append("Func", "check4Reservation");
-                api.checkReserved(data)
-                    .then(data => {
-                        if (data === 'true') {
-                            this.close(true)
-                        } else {
-                            new Notif({
-                                message: 'نوبت شما برای این پزشک در این تایم قبلا ثبت شده است.',
-                                theme: 'error'
-                            }).show();
-                        }
-
-                    })
-                    .catch(err => {
-                        new Notif({message: err, theme: 'error'}).show();
-                    })
-            }).catch(err => {
-                console.log(err)
-                new Notif({message: 'خطا در ارتباط', theme: 'error'}).show();
-            })
+        if (result === true) {
+            this.close(true);
         } else {
-            this.close(true)
+            new Notif({message: result, theme: 'error'}).show();
         }
-
-
     }
 }
 

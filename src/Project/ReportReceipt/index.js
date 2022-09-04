@@ -31,7 +31,7 @@ class ReportReceipt extends MyComponent {
             case 'MORNING':
             case 'EVENING':
             case 'FUTURE':
-                if (setting.report2LayoutPath ) {
+                if (setting.report2LayoutPath) {
                     fetch(setting.report2LayoutPath)
                         .then(response => response.text())
                         .then(template => {
@@ -42,7 +42,7 @@ class ReportReceipt extends MyComponent {
                 break;
         }
 
-        if(userDataEntry.reciept) {
+        if (userDataEntry.reciept) {
             if (setting.reportLayoutPath) {
                 fetch(setting.reportLayoutPath)
                     .then(response => response.text())
@@ -52,13 +52,71 @@ class ReportReceipt extends MyComponent {
             }
         }
 
+        if (userDataEntry.paraclinicPayment) {
+            this.setState({
+                template:
+                    `<div class="dis-f"
+                             style="border-bottom: 3px solid rgb(0, 0, 0); display: flex !important; align-items: center !important; padding: 0 !important; margin: 0 !important">
+                            <div class="flex ali-e"
+                                 style="align-self: flex-end; margin-bottom: 10px !important">
+
+                                <h2 style="margin-bottom: 15px" class="ParaclinicReceipt-black-title ali-c">نام و
+                                    نام
+                                    خانوادگی:
+                                    ${userDataEntry.paraclinicData.pendingReceptions[0].patient_first_name + ' ' + userDataEntry.paraclinicData.pendingReceptions[0].patient_last_name}</h2>
+                                <h2 class="ParaclinicReceipt-black-title ali-c">کد ملی:
+                                    ${userDataEntry.nationality === 'FOREIGN' ? `${userDataEntry.nationalCode} - اتباع  ` : userDataEntry.nationalCode || ''}</h2>
+                            </div>
+                        </div>
+                        ${
+                        userDataEntry.paraclinicData.pendingReceptions.map(item =>
+                            `<div class="ParaclinicDetail">
+                                    <div class="ParaclinicReceiptDetailContainer">
+                                        <div class="ParaclinicReceiptDetail"><label>نوبت:</label><p>${item.turn}</p>
+                                        </div>
+                                        <div class="ParaclinicReceiptDetail"><label> بیمه:</label>
+                                            <p>${item.insurance_name || '---'}</p>
+                                        </div>
+                                    </div>
+                                    <div class="ParaclinicReceiptDetail"><label>نام پزشک معالج:</label>
+                                        <p>${item.doctor_full_name}</p></div>
+                                    <div class="ParaclinicReceiptDetail"><label>نام پزشک مرکز:</label>
+                                        <p>${item.doctor.first_name + ' ' + item.doctor.last_name}</p></div>
+
+                                  
+                                    <div class="ParaclinicReceiptDetail"><label>مبلغ پرداخت شده:</label>
+                                        <p>${App.formatMoney(item.invoice.payable)}ريال</p>
+                                    </div>
+                                    
+                                     <div class="ParaclinicReceiptDetail"><label>مبلغ خدمات الکترونیکی:</label>
+                                        <p>${App.formatMoney(item.invoice.invoice_items[item.invoice.invoice_items.length - 1].total)}ريال</p>
+                                    </div>
+                                    
+                                    <div class="ParaclinicReceiptDetail">
+                                        <label>تاریخ و زمان ویزیت:</label>
+                                        <p>${item.appointment_date_time}</p>
+                                    </div>
+
+                                    <div class="ParaclinicReceiptDetail">
+                                        <label>خدمات:</label>
+                                    </div>
+
+                                        ${item.reception_items.map(data =>
+                                `<div class="ParaclinicReceiptDetail">
+                                                <p style="overflow-wrap: break-word">${data.title}</p></div>`).join('')}
+                                </div>`).join('')
+                    }
+                    `
+            })
+        }
+
         setTimeout(_ => {
-        Main.print({deviceName: setting.printerName})
-            .then(_ => {
-                setTimeout(_ => {
-                    props.history.push(Resource.Route.HOME);
-                }, (setting.receiptPrint?.duration || 1) * 1000);
-            });
+            Main.print({deviceName: setting.printerName})
+                .then(_ => {
+                    setTimeout(_ => {
+                        props.history.push(Resource.Route.HOME);
+                    }, (setting.receiptPrint?.duration || 1) * 1000);
+                });
         }, 500);
     }
 
@@ -71,7 +129,11 @@ class ReportReceipt extends MyComponent {
         const dictionary = {
             hospitalName: setting?.receiptPrint?.hospitalName || '',
             birthDate: userDataEntry.birthDate ? moment(userDataEntry.birthDate).format('jYYYY/jMM/jDD') : '',
-            darmangah: {MORNING: 'رزرو حضوری درمانگاه صبح', EVENING: 'رزرو حضوری درمانگاه عصر', FUTURE: 'رزرو حضوری روز‌های آینده'}[userDataEntry.darmangah] || '',
+            darmangah: {
+                MORNING: 'رزرو حضوری درمانگاه صبح',
+                EVENING: 'رزرو حضوری درمانگاه عصر',
+                FUTURE: 'رزرو حضوری روز‌های آینده'
+            }[userDataEntry.darmangah] || '',
             //doctor
             // doctorAvatar: userDataEntry.doctor?.avatar || '',
             doctorCode: userDataEntry.doctor?.code || '',
@@ -94,11 +156,11 @@ class ReportReceipt extends MyComponent {
             hid: userDataEntry.hid || '',
             lastName: userDataEntry.lastName || '',
             mobile: userDataEntry.mobile || '',
-            nationalCode: userDataEntry.nationality === 'FOREIGN' ? `${userDataEntry.nationalCode} - اتباع  ` : userDataEntry.nationalCode || '' ,
+            nationalCode: userDataEntry.nationality === 'FOREIGN' ? `${userDataEntry.nationalCode} - اتباع  ` : userDataEntry.nationalCode || '',
             nationality: {FOREIGN: 'اتباع', IRANIAN: 'ایرانی'}[userDataEntry.nationality] || '',
             //payment
-            paymentDataPriceAmount: setting.reservePrice ? userDataEntry.paymentData.priceAmount ? App.formatMoney(userDataEntry.paymentData.priceAmount) : 0 : 0,
-            paymentDataChargeAmount: userDataEntry.reciept ? setting.chargeAmount ? userDataEntry.paymentData.chargeAmount ? App.formatMoney(userDataEntry.paymentData.chargeAmount) : 0 : 0 : setting.chargeAmountReserve ? userDataEntry.paymentData.chargeAmount ? App.formatMoney(userDataEntry.paymentData.chargeAmount) : 0 : 0,
+            paymentDataPriceAmount: userDataEntry.paymentData.priceAmount ? App.formatMoney(userDataEntry.paymentData.priceAmount) : 0,
+            paymentDataChargeAmount: userDataEntry.reciept ? setting.chargeAmount ? userDataEntry.paymentData.chargeAmount ? App.formatMoney(userDataEntry.paymentData.chargeAmount) : 0 : 0 : userDataEntry.paymentData.chargeAmount ? App.formatMoney(userDataEntry.paymentData.chargeAmount) : 0,
             paymentDataChargePin: userDataEntry.paymentData.chargePin || '',
             paymentDataPricePin: userDataEntry.paymentData.pricePin || '',
             paymentDataPayed: userDataEntry.paymentData.priceAmount && userDataEntry.paymentData.chargeAmount ? App.formatMoney(parseInt(userDataEntry.paymentData.priceAmount || 0) + parseInt(userDataEntry.paymentData.chargeAmount || 0)) : '',
@@ -144,20 +206,22 @@ class ReportReceipt extends MyComponent {
             internetResInfoAppointmentDate: userDataEntry?.internetResInfo?.appointmentDate || '',
             internetResInfoPatientName: userDataEntry?.internetResInfo?.patientName || '',
             internetResInfoPatientFamily: userDataEntry?.internetResInfo?.patientFamily || '',
-            internetResInfoInsuranceName:  userDataEntry?.internetResInfo?.insuranceName || '',
-            internetResInfoInsuranceID:  userDataEntry?.internetResInfo?.insuranceID || '',
-            internetResInfoPaymentAmount:  userDataEntry?.paymentData?.priceAmount || 0,
-            internetResInfoChargeAmount: setting.showChargeAmountReciept ? userDataEntry?.paymentData?.chargeAmount : 0
-        };
-
-        for (const item of Object.entries(dictionary)) {
-            const rgx = new RegExp(`\{\{${item[0]}\}\}`, 'ig');
-            template = template.replace(rgx, item[1]);
+            internetResInfoInsuranceName: userDataEntry?.internetResInfo?.insuranceName || '',
+            internetResInfoInsuranceID: userDataEntry?.internetResInfo?.insuranceID || '',
+            internetResInfoPaymentAmount: userDataEntry?.paymentData?.priceAmount || 0,
+            internetResInfoChargeAmount: setting.chargeAmount ? userDataEntry?.paymentData?.chargeAmount : 0,
         }
 
-        const rgx = new RegExp(`\{\{all\}\}`, 'ig');
-        if (rgx.test(template))
-            template = this.allTable(Object.entries(dictionary));
+        if (!userDataEntry.paraclinicPayment) {
+            for (const item of Object.entries(dictionary)) {
+                const rgx = new RegExp(`\{\{${item[0]}\}\}`, 'ig');
+                template = template.replace(rgx, item[1]);
+            }
+
+            const rgx = new RegExp(`\{\{all\}\}`, 'ig');
+            if (rgx.test(template))
+                template = this.allTable(Object.entries(dictionary));
+        }
 
         return <Page className={'ReportReceipt'} id={'ReportReceipt'} style={{
             marginRight: parseInt(setting.receiptPrint.margin.right),
@@ -166,8 +230,10 @@ class ReportReceipt extends MyComponent {
             marginBottom: parseInt(setting.receiptPrint.margin.bottom)
         }}>
             <div dangerouslySetInnerHTML={{__html: template}}/>
-            {setting.receiptPrint.description && <p className={'ReportReceipt-prompt'}>{setting.receiptPrint.description}</p>}
-            {userDataEntry.hid && userDataEntry.hid.length < 30 ? <Barcode height={50} fontSize={13} value={userDataEntry.hid}/> : null}
+            {setting.receiptPrint.description &&
+            <p className={'ReportReceipt-prompt'}>{setting.receiptPrint.description}</p>}
+            {userDataEntry.hid && userDataEntry.hid.length < 30 ?
+                <Barcode height={50} fontSize={13} value={userDataEntry.hid}/> : null}
         </Page>;
     }
 

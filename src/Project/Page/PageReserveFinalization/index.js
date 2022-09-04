@@ -45,13 +45,6 @@ class PageReserveFinalization extends MyComponent {
 
     componentDidMount() {
         super.componentDidMount();
-        const {base, setting, updateUserDataEntry} = this.props;
-        const {userDataEntry} = base;
-
-        if ((userDataEntry.darmangah === 'EVENING' && moment(`2022-08-21 ${userDataEntry?.doctor?.startTime}`).isSameOrAfter(moment(`2022-08-21 ${setting?.eveningStartTime}`)))
-            || (userDataEntry.darmangah === 'FUTURE' && moment(`2022-08-21 ${userDataEntry?.reserveTime?.time}`).isSameOrAfter(moment(`2022-08-21 ${setting?.eveningStartTime}`)))) {
-            updateUserDataEntry({specialClinic: true});
-        }
 
         setTimeout(_ => {
             this.getUserData();
@@ -88,15 +81,14 @@ class PageReserveFinalization extends MyComponent {
                     <CheckList className={'mar-b-20'} title={`ملیت بیمار: ${nationality || ' . . .'}`}
                                checked={Boolean(nationality)}/>
                     {userDataEntry.nationality !== 'FOREIGN' &&
-                        <CheckList className={'mar-b-20'}
-                                   title={`کد ملی بیمار: ${userDataEntry.nationalCode || ' . . .'}`}
-                                   checked={Boolean(userDataEntry.nationalCode)}/>}
+                    <CheckList className={'mar-b-20'} title={`کد ملی بیمار: ${userDataEntry.nationalCode || ' . . .'}`}
+                               checked={Boolean(userDataEntry.nationalCode)}/>}
                     {userDataEntry.nationality !== 'FOREIGN' && <CheckList className={'mar-b-20'}
                                                                            title={`نام بیمار: ${userDataEntry.firstName ? `${userDataEntry.firstName} ${userDataEntry.lastName}` : ' . . .'}`}
                                                                            checked={Boolean(userDataEntry.firstName)}/>}
                     {userDataEntry.nationality !== 'IRANIAN' &&
-                        <CheckList className={'mar-b-20'} title={`بیمه بیمار: ${foreignInsurance || ' . . .'}`}
-                                   checked={Boolean(foreignInsurance)}/>}
+                    <CheckList className={'mar-b-20'} title={`بیمه بیمار: ${foreignInsurance || ' . . .'}`}
+                               checked={Boolean(foreignInsurance)}/>}
                     {userDataEntry.nationality !== 'FOREIGN' && <CheckList className={'mar-b-20'}
                                                                            title={`بیمه بیمار: ${userDataEntry.standardInsurance?.name || userDataEntry.shafadocInsurance?.name || ' . . .'}`}
                                                                            checked={Boolean(userDataEntry.standardInsurance.name)}/>}
@@ -254,7 +246,7 @@ class PageReserveFinalization extends MyComponent {
     queueReserve() {
         setTimeout(_ => {
             const {props} = this;
-            const {setting,base} = props;
+            const {setting} = props;
             const {userDataEntry} = props.base;
 
             if (userDataEntry.darmangah === 'FUTURE') {
@@ -262,7 +254,7 @@ class PageReserveFinalization extends MyComponent {
 
                 const body = {
                     turnNo: '0',
-                    priceAmount: setting.reservePrice ? parseInt(userDataEntry.paymentData.priceAmount || 0) : 0,
+                    priceAmount: parseInt(userDataEntry.paymentData.priceAmount || 0),
                     ftId: userDataEntry.reserveTime.id,
                     codeMeli: userDataEntry.nationalCode,
                     mobile: userDataEntry.mobile,
@@ -310,7 +302,6 @@ class PageReserveFinalization extends MyComponent {
 
                                 service.printReceipt({context: this});
                             } else {
-                                props.updateBase({unreserved: data});
                                 body.finished = 'false';
 
                                 futureReserves.insert(body);
@@ -324,7 +315,7 @@ class PageReserveFinalization extends MyComponent {
                             }
                         }).catch(err => {
                             props.updateBase({loading: false});
-                            props.updateBase({unreserved: body});
+
                             body.response = err;
                             body.finished = 'false';
 
@@ -341,7 +332,7 @@ class PageReserveFinalization extends MyComponent {
                     })
                     .catch(err => {
                         props.updateBase({loading: false});
-                        props.updateBase({unreserved: body});
+
                         body.response = err;
                         body.finished = 'false';
 
@@ -374,10 +365,10 @@ class PageReserveFinalization extends MyComponent {
                             docId: userDataEntry.doctor.id.toString(),
                             docCode: userDataEntry.doctor.code,
                             ofTime: userDataEntry.doctor.startTime,
-                            specialtySlug: userDataEntry.specialClinic ? setting.clinicLocationId.toString() : userDataEntry.doctor.spSlug.toString(),
+                            specialtySlug: userDataEntry.doctor.spSlug.toString(),
                             patientCodeMelli: userDataEntry.nationalCode,
                             turnNo: userDataEntry.resCount || data.ResCount,
-                            paymentAmount: setting.reservePrice ? userDataEntry.paymentData.priceAmount.toString() : '0',
+                            paymentAmount: userDataEntry.paymentData.priceAmount.toString(),
                             transactionId: userDataEntry.transactionId || '',
                             firstName: userDataEntry.firstName || '',
                             lastName: userDataEntry.lastName || '',
@@ -525,13 +516,10 @@ class PageReserveFinalization extends MyComponent {
             this.queueGender();
         else if (setting.patientMobile && !userDataEntry.mobile)
             this.queueMobile();
-        else if (setting.getPsychiatristVisitTime &&
-            (
-                (Number(setting.psychiatristId) === userDataEntry.doctor.tId && userDataEntry.darmangah === 'FUTURE')
-                || (Number(setting.psychiatristId) === userDataEntry.doctor.spId && userDataEntry.darmangah === 'MORNING')
-                || (Number(setting.psychiatristId) === userDataEntry.doctor.spId && userDataEntry.darmangah === 'EVENING')
-            )
-        )
+        //tId is used in Future Reserves and spId in jari Reserves (if an error given the condition will be )
+        //(setting.getPsychiatristVisitTime && (((Number(setting.psychiatristId) === userDataEntry.doctor.tId && userDataEntry.darmangah === 'FUTURE')
+        // || Number(setting.psychiatristId) === userDataEntry.doctor.spId))
+        else if (setting.getPsychiatristVisitTime && (Number(setting.psychiatristId) === userDataEntry.doctor.tId || Number(setting.psychiatristId) === userDataEntry.doctor.spId))
             this.queuePsychiatrist();
         else
             this.queueServicePrice();

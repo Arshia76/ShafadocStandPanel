@@ -71,7 +71,7 @@ class service {
                 mask: '####/##/##',
                 validator: value => {
                     try {
-                        if (!value || !(moment(value, 'jYYYYjMMjDD', true).isValid()))
+                        if (!value || moment(value).format('jYYYYjMMjDD') === 'Invalid date')
                             return 'تاریخ تولد صحیحی را وارد کنید.';
                     } catch (e) {
                         return 'تاریخ تولد صحیحی را وارد کنید.';
@@ -292,7 +292,6 @@ class service {
 
         return new Promise((resolve, reject) => {
             context.ref.modalNumberKeyboard.current.open({
-                key: 'foreignCode',
                 prompt: 'لطفا کد اتباع بیمار را وارد نمایید.',
                 validator: value => {
                     if (!value)
@@ -321,7 +320,6 @@ class service {
 
         return new Promise((resolve, reject) => {
             context.ref.modalNumberKeyboard.current.open({
-                key: 'nationalCode',
                 prompt: 'لطفا کد ملی بیمار را وارد نمایید.',
                 validator: value => {
                     if (setting.nationalCodeValidationCheck && !App.isNationalCode(value))
@@ -408,7 +406,11 @@ class service {
             let insuranceId = null;
 
             props.updateBase({loading: true});
-            insuranceId = userDataEntry.shafadocInsurance.id;
+
+            if (userDataEntry.nationality === 'FOREIGN')
+                insuranceId = userDataEntry.hasForeignInsurance ? 72 : 71;
+            else if (userDataEntry.nationality === 'IRANIAN')
+                insuranceId = userDataEntry.shafadocInsurance.id;
 
             signalR.getPriceAmount(userDataEntry.doctor.id, insuranceId)
                 .then(data => {

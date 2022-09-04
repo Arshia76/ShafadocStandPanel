@@ -96,41 +96,6 @@ class Main {
         return promise;
     }
 
-    static getSpecialityMap(path) {
-        const promise = new Promise((resolve, reject) => {
-            ipcRenderer?.once('getSpecialityMap', (event, list) => {
-                console.log(list);
-                resolve(list);
-            });
-
-            setTimeout(_ => {
-                reject(Main.RequestTimeoutMessage);
-            }, Main.RequestTimeoutDuration);
-        });
-
-        ipcRenderer?.send('getSpecialityMap', path);
-
-        return promise;
-    }
-
-    static getForeignMap(path) {
-        console.log('path',path)
-        const promise = new Promise((resolve, reject) => {
-            console.log('call promise')
-            ipcRenderer?.once('getForeignMap', (event, list) => {
-                console.log(list);
-                resolve(list);
-            });
-
-            setTimeout(_ => {
-                reject(Main.RequestTimeoutMessage);
-            }, Main.RequestTimeoutDuration);
-        });
-
-        ipcRenderer?.send('getForeignMap', path);
-        return promise;
-    }
-
     static getPriceAmount(nodeId, docId, insurId, age, priceAmount, shafaDocUrl) {
         console.log('getPriceAmount', nodeId, docId, insurId, age, priceAmount, shafaDocUrl)
 

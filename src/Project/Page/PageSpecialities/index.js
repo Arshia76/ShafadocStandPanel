@@ -9,7 +9,6 @@ import SpecialityCard from '../../SpecialityCard';
 import {updateBase, updateUserDataEntry} from '../../../Redux/Actions/base';
 import BackToMainMenu from "../../../backToMainMenu";
 
-
 class PageSpecialities extends MyComponent {
     constructor(props) {
         super(props);
@@ -30,20 +29,10 @@ class PageSpecialities extends MyComponent {
         const {userDataEntry} = props.base;
 
         return <Page className={'PageSpecialities dis-f'} id={'PageSpecialities'}>
-            <div className={'main fb-20'} style={{maxHeight: 'calc(100vh - 150px)', overflow: 'auto'}}
-                 onClick={_ => BackToMainMenu.resetTimer()}>
-                {userDataEntry.darmangah === "MORNING" ? props.base.morningSpecialities?.map((item, index) => <div
-                    className={'fb-10 fb-5x-20 pad-8'}><SpecialityCard key={index} data={item}
-                                                                       onClick={this.cardClickHandler.bind(this)}/>
-                </div>) : null}
-                {userDataEntry.darmangah === "EVENING" ? props.base.eveningSpecialities?.map((item, index) => <div
-                    className={'fb-10 fb-5x-20 pad-8'}><SpecialityCard key={index} data={item}
-                                                                       onClick={this.cardClickHandler.bind(this)}/>
-                </div>) : null}
-                {userDataEntry.darmangah === "FUTURE" ? props.base.futureSpecialities?.map((item, index) => <div
-                    className={'fb-10 fb-5x-20 pad-8'}><SpecialityCard key={index} data={item}
-                                                                       onClick={this.cardClickHandler.bind(this)}/>
-                </div>) : null}
+            <div className={'main fb-20'} style={{maxHeight: 'calc(100vh - 150px)', overflow: 'auto'}} onClick={_ => BackToMainMenu.resetTimer()}>
+                {userDataEntry.darmangah === "MORNING" ? props.base.morningSpecialities?.map((item, index) => <div className={'fb-10 fb-5x-20 pad-8'}><SpecialityCard key={index} data={item} onClick={this.cardClickHandler.bind(this)}/></div>) : null}
+                {userDataEntry.darmangah === "EVENING" ? props.base.eveningSpecialities?.map((item, index) => <div className={'fb-10 fb-5x-20 pad-8'}><SpecialityCard key={index} data={item} onClick={this.cardClickHandler.bind(this)}/></div>) : null}
+                {userDataEntry.darmangah === "FUTURE" ? props.base.futureSpecialities?.map((item, index) => <div className={'fb-10 fb-5x-20 pad-8'}><SpecialityCard key={index} data={item} onClick={this.cardClickHandler.bind(this)}/></div>) : null}
             </div>
             <div className="dis-f fb-20 mar-t-20">
                 <div className="flex"/>
@@ -60,6 +49,7 @@ class PageSpecialities extends MyComponent {
 
     cardClickHandler(data) {
         const {props} = this;
+
         props.updateUserDataEntry({speciality: data});
         props.updateBase({tax_id: data.Id});
         props.history.push(Resource.Route.DOCTORS);

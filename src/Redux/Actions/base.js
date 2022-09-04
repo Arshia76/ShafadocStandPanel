@@ -27,8 +27,13 @@ export const resetUserDataEntry = _ => {
     return {
         type: UPDATE_BASE,
         userDataEntry: {
-            specialClinic: false,
             reciept: null,
+            paraclinicPayment:null,
+            firstTimePsychiatristVisit:null,
+            paraclinicData: {
+                pendingReceptions:null,
+                token:null
+            },
             darmangah: null, // MORNING, EVENING, FUTURE
             nationalCode: null,
             insurance:null,

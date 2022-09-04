@@ -11,7 +11,6 @@ import {updateBase, updateUserDataEntry} from '../../../Redux/Actions/base';
 import BackToMainMenu from "../../../backToMainMenu";
 import {api} from "../../../api";
 import {futureReserves} from "../../../db";
-import Main from "../../../ElectronLayer/Main";
 
 class PageDarmangah extends MyComponent {
     constructor(props) {
@@ -33,8 +32,6 @@ class PageDarmangah extends MyComponent {
 
     componentDidMount() {
         const {props} = this;
-        const {setting} = props;
-        const {updateBase} = props;
 
         BackToMainMenu.setTimer(this);
 
@@ -71,6 +68,7 @@ class PageDarmangah extends MyComponent {
         };
         signalR.setSpesSecond = (specialities, flag, startTime) => {
             this.setState({eveningLoading: false});
+
             specialities = specialities.map(item => ({
                 id: item.Id,
                 icon: `data:image/png;base64,${item.Image}`,
@@ -102,17 +100,7 @@ class PageDarmangah extends MyComponent {
 
         signalR.getSpesFirst();
         signalR.getSpesSecond();
-        Main.getSpecialityMap(setting.specialityMapPath)
-            .then(data => {
-                console.log(data);
-                this.getFutureReservationData(data);
-                updateBase({filteredSpecialties: data})
-            })
-            .catch(err => {
-                console.log('آدرسی برای نقشه های درمانگاه انتخاب نشده است');
-                console.log(err);
-                this.getFutureReservationData();
-            });
+        this.getFutureReservationData();
     }
 
     componentWillUnmount() {
@@ -123,23 +111,13 @@ class PageDarmangah extends MyComponent {
         const {state} = this;
         const loading = state.morningLoading || state.eveningLoading;
         const futureDisabled = state.futureDisabled || futureReserves.list().length;
-        const unreserved = Object.keys(this.props.base.unreserved).length !== 0;
         const {setting} = this.props;
 
         return <Page className={'PageDarmangah dis-f'} id={'PageDarmangah'}>
             <div className={'fb-20'} onClick={_ => BackToMainMenu.resetTimer()}>
-                <MenuCard title={state.morningText} disabled={setting.disableJari || state.morningDisabled}
-                          icon={loading ? Resource.IMAGE.LOADER.BLACK : Resource.IMAGE.DAY}
-                          description={'برای دریافت نوبت صبح می توانید همین دکمه را لمس کنید.'}
-                          onClick={this.cardClickHandler.bind(this, 'MORNING')}/>
-                <MenuCard title={state.eveningText} disabled={setting.disableJari || state.eveningDisabled}
-                          icon={loading ? Resource.IMAGE.LOADER.BLACK : Resource.IMAGE.NIGHT}
-                          description={'برای دریافت نوبت ظهر می توانید همین دکمه را لمس کنید.'}
-                          onClick={this.cardClickHandler.bind(this, 'EVENING')}/>
-                <MenuCard title={'نوبت روزهای آینده '} disabled={unreserved || setting.disableFuture || futureDisabled}
-                          icon={state.futureLoading ? Resource.IMAGE.LOADER.BLACK : Resource.IMAGE.CIRCLE["1"]}
-                          description={'جهت دریافت نوبت روزهای آینده لمس کنید.'}
-                          onClick={this.cardClickHandler.bind(this, 'FUTURE')}/>
+                <MenuCard title={state.morningText} disabled={setting.disableJari || state.morningDisabled} icon={loading ? Resource.IMAGE.LOADER.BLACK : Resource.IMAGE.DAY} description={'برای دریافت نوبت صبح می توانید همین دکمه را لمس کنید.'} onClick={this.cardClickHandler.bind(this, 'MORNING')}/>
+                <MenuCard title={state.eveningText} disabled={setting.disableJari || state.eveningDisabled} icon={loading ? Resource.IMAGE.LOADER.BLACK : Resource.IMAGE.NIGHT} description={'برای دریافت نوبت ظهر می توانید همین دکمه را لمس کنید.'} onClick={this.cardClickHandler.bind(this, 'EVENING')}/>
+                <MenuCard title={'نوبت روزهای آینده '} disabled={setting.disableFuture || futureDisabled} icon={state.futureLoading ? Resource.IMAGE.LOADER.BLACK : Resource.IMAGE.CIRCLE["1"]} description={'جهت دریافت نوبت روزهای آینده لمس کنید.'} onClick={this.cardClickHandler.bind(this, 'FUTURE')}/>
                 <div className="dis-f mar-t-10">
                     <div className="flex"/>
                     <Button title={`بازگشت ${state.timer}`} theme={'red'} onClick={this.backClickHandler.bind(this)}/>
@@ -164,13 +142,14 @@ class PageDarmangah extends MyComponent {
         props.history.push(Resource.Route.SPECIALITIES);
     }
 
-    getFutureReservationData(data) {
+    getFutureReservationData() {
         const {props} = this;
         this.setState({futureLoading: true});
 
-        api.getList({nodeId: props.setting.nodeId, specialties: data || null})
+        api.getList({nodeId: props.setting.nodeId})
             .then(result => {
                 this.setState({futureLoading: false, futureDisabled: false});
+
                 props.updateBase({
                     futureSpecialities: result.specialities,
                     doctors: result.doctors

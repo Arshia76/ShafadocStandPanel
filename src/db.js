@@ -52,6 +52,26 @@ ctx.version(3).stores({
              finished`
 });
 
+ctx.version(3).stores({
+    paraclinicPayments: `++id,
+    priceAmount,
+    insuranceName,
+    codeMelli,
+    patientName,
+    patientFamily,
+    appointmentDate,
+    created_at,
+    send_at,
+    doctor,
+    therapistDoctor,
+    saleReferenceId,
+    receptionId,
+    bankId,
+    description,
+    response,
+    finished`
+})
+
 class todayReserves {
     static clearAll() {
         return ctx.todayReserves.clear();
@@ -152,4 +172,51 @@ class futureReserves {
     }
 }
 
-export {todayReserves, futureReserves};
+class paraclinicPayments {
+    static clearAll() {
+        return ctx.paraclinicPayments.clear();
+    }
+
+    static clearSentRows() {
+        return ctx.paraclinicPayments.where('finished').equals('true').delete();
+    }
+
+    static delete(id) {
+        return ctx.paraclinicPayments.where('id').equals(id).delete();
+    }
+
+
+    static insert(data) {
+        return ctx.paraclinicPayments.add({
+            priceAmount: data.priceAmount,
+            insuranceName: data.insuranceName,
+            codeMelli: data.codeMelli,
+            patientName: data.patientName,
+            patientFamily: data.patientFamily,
+            saleReferenceId: data.saleReferenceId,
+            appointmentDate: data.appointmentDate,
+            created_at: data.created_at,
+            send_at: data.send_at,
+            doctor: data.doctor,
+            therapistDoctor: data.therapistDoctor,
+            receptionId: data.receptionId,
+            bankId: data.bankId,
+            description: data.description,
+            response: data.response,
+            finished: data.finished.toString()
+        });
+    };
+
+    static list(all = false) {
+        if (all)
+            return ctx.paraclinicPayments.toArray();
+        else
+            return ctx.paraclinicPayments.where('finished').equals('false').toArray();
+    }
+
+    static update(id, props = {}) {
+        return ctx.paraclinicPayments.where('id').equals(id).modify(props);
+    }
+}
+
+export {todayReserves, futureReserves, paraclinicPayments};

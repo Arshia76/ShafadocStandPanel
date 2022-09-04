@@ -14,14 +14,14 @@ import moment from "jalali-moment";
 import service from "../../../service";
 import ModalNationality from "../../Modal/ModalNationality";
 import {api} from "../../../api";
-import smalltalk from 'smalltalk'
 
 class PageMain extends MyComponent {
     constructor(props) {
         super(props);
 
         this.state = {
-            goToSettingTapCount: 0
+            goToSettingTapCount: 0,
+            loading: false
         };
 
         this.ref = {
@@ -46,10 +46,11 @@ class PageMain extends MyComponent {
         if (!setting.serverDomain) {
             props.history.push(Resource.Route.SETTING);
         }
+
     }
 
     render() {
-        const {setting} = this.props;
+        const {setting,base} = this.props;
         return <React.Fragment>
             <Page className={'PageMain dis-f'} id={'PageMain'}>
                 {this.state.loading ? <div className={'background'}>
@@ -73,6 +74,10 @@ class PageMain extends MyComponent {
                     <MenuCard title={'دریافت قبض برای نوبت‌های اینترنتی / تلفنی'} icon={Resource.IMAGE.CIRCLE["3"]}
                               description={'جهت دریافت نوبت اینترنتی لمس کنید.'} disabled={setting.disableReciept}
                               onClick={this.onClickHandler.bind(this, 'gabz')}/>
+                    <MenuCard title={setting.paraclinicPaymentText} icon={Resource.IMAGE.CIRCLE["4"]}
+                              description={'جهت پرداخت لمس کنید.'}
+                              disabled={setting.disableParaclinicPayment || base.unpaied}
+                              onClick={this.onClickHandler.bind(this, 'paraclinic')}/>
                     {/*<MenuCard title={'نوبت روزهای آینده '} icon={Resource.IMAGE.CIRCLE["1"]} description={'جهت دریافت نوبت روز جاری لمس کنید.'} onClick={this.onClickHandler.bind(this, 'jari')}/>*/}
                 </div>
             </Page>
@@ -88,16 +93,7 @@ class PageMain extends MyComponent {
         if (goToSettingTapCount > 5) {
             this.setState({goToSettingTapCount: 0});
 
-            smalltalk
-                .prompt('رمز', 'رمز عبور را وارد کنید')
-                .then((value) => {
-                    if (value === 'Arshia1376')
-                        props.history.push(Resource.Route.SETTING);
-                })
-                .catch(() => {
-                    console.log('cancel');
-                });
-
+            props.history.push(Resource.Route.SETTING);
         }
 
         this.setState({goToSettingTapCount: goToSettingTapCount + 1}, _ => {
@@ -124,6 +120,14 @@ class PageMain extends MyComponent {
                 props.updateUserDataEntry({reciept: true})
                 this.queueNationality()
                 break;
+            case 'paraclinic':
+                props.resetUserDataEntry();
+                props.updateUserDataEntry({paraclinicPayment: true})
+                props.updateUserDataEntry({
+                    nationality: 'IRANIAN'
+                })
+                this.queueNationalCode()
+                break;
             default:
         }
     }
@@ -146,9 +150,56 @@ class PageMain extends MyComponent {
     queueNationalCode() {
         service.getPatientNationalCode({context: this})
             .then(nationalCode => {
+                const {userDataEntry} = this.props.base;
+                if (userDataEntry.reciept) {
+                    this.queueInternetResInfo(nationalCode)
+                } else if (userDataEntry.paraclinicPayment) {
+                    this.setState({loading: true})
+                    const formData = new FormData();
+                    formData.append('api_key', process.env.REACT_APP_API_KEY);
+                    formData.append('secret', process.env.REACT_APP_SECRET)
+                    api.paraclinicLogin(formData)
+                        .then(token => {
+                            api.getPendingReserves(nationalCode, token.access_token,
+                                moment().format("YYYY/MM/DD HH:mm:ss"),
+                                moment().subtract(12, "hours").format("YYYY/MM/DD HH:mm:ss"))
+                                .then(data => {
+                                    this.setState({loading: false})
+                                    this.props.updateUserDataEntry({
+                                        paraclinicData: {
+                                            pendingReceptions: data.data,
+                                            token: token.access_token
+                                        }
+                                    })
+                                    if (data.data.length > 0) {
+                                        this.props.history.push(Resource.Route.PARACLINIC_RECEPTION)
+                                    } else {
+                                        new Notif({
+                                            message: 'نسخه ای برای این کد ملی ثبت نشده است',
+                                            theme: 'error'
+                                        }).show()
+                                    }
+                                })
+                                .catch(e => {
+                                    console.log(e)
+                                    this.setState({
+                                        loading: false
+                                    })
+                                })
 
-                this.setState({loading: true});
-                this.queueInternetResInfo(nationalCode)
+                        })
+                        .catch(e => {
+                            console.log(e);
+                            new Notif({
+                                message: 'مشکلی در روند ورود رخ داد',
+                                theme: 'error'
+                            }).show()
+                            this.setState({
+                                loading: false
+                            })
+                        })
+
+                }
             })
             .catch(err => console.log(err))
     }
@@ -156,7 +207,6 @@ class PageMain extends MyComponent {
     queueForeignCode() {
         service.getForeignPatientCode({context: this})
             .then(foreignCode => {
-
                 this.setState({loading: true});
                 this.queueInternetResInfo(foreignCode)
             })
@@ -164,7 +214,7 @@ class PageMain extends MyComponent {
     }
 
     queueInternetResInfo(code) {
-        service.getInternetResInfo({context:this,code})
+        service.getInternetResInfo({context: this, code})
             .then(data => {
                 const {props} = this
                 if (this.unmounted)
