@@ -14,20 +14,14 @@ const initialState = {
     doctors: [],
     insurances: [],
     unreserved: {},
-    unpaied:false,
     userDataEntry: {
         reciept: null,
-        paraclinicPayment:null,
         darmangah: null, // MORNING, EVENING, FUTURE
         nationalCode: null,
         insurance:null,
         nationality: null, // IRANIAN, FOREIGN
         speciality: null,
         firstTimePsychiatristVisit:null,
-        paraclinicData: {
-            pendingReceptions:null,
-            token:null
-        },
         doctor: {
             id:null,
             code:null,

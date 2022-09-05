@@ -11,11 +11,9 @@ import Main from "../../../ElectronLayer/Main";
 import signalR from "../../../signalr";
 import Notif from "../../../Components/Notif";
 import BackToMainMenu from "../../../backToMainMenu";
-import {updateBase, updateUserDataEntry} from "../../../Redux/Actions/base";
+import {updateUserDataEntry} from "../../../Redux/Actions/base";
 import service from "../../../service";
-import {api} from "../../../api";
-import {paraclinicPayments} from "../../../db";
-import moment from "jalali-moment";
+import {api} from '../../../api';
 
 class ModalPayment extends MyComponent {
     constructor(props) {
@@ -45,24 +43,23 @@ class ModalPayment extends MyComponent {
         const {setting} = props
         const {userDataEntry} = props.base;
         let zeroPrice;
-        const chargeAmount = userDataEntry.reciept ? setting.chargeAmount ? userDataEntry.paymentData?.chargeAmount : 0 : userDataEntry.paymentData?.chargeAmount;
+        const chargeAmount = userDataEntry.reciept ? setting.chargeAmount ? userDataEntry.paymentData?.chargeAmount : 0 : setting.chargeAmountReserve ? userDataEntry.paymentData?.chargeAmount : 0;
         if (userDataEntry.reciept) {
             if (userDataEntry.internetResInfo.paymentAmount === 0 && userDataEntry.internetResInfo.remainedPaymentAmount === 0) {
                 zeroPrice = 0;
             } else {
                 zeroPrice = userDataEntry.paymentData?.priceAmount
             }
-        } else if (userDataEntry.paraclinicPayment) {
-            zeroPrice = userDataEntry?.paraclinicData?.pendingReceptions.reduce((total, current) => total + current.invoice.payable, 0)
-
         } else {
-            zeroPrice = userDataEntry.paymentData?.priceAmount
+            if (setting.reservePrice) {
+                zeroPrice = userDataEntry.paymentData?.priceAmount;
+            } else {
+                zeroPrice = 0
+            }
         }
 
         const price = (chargeAmount || 0) + (zeroPrice || 0);
-        const porsantCondition = (userDataEntry.reciept && setting.shafadocPorsantPrompt && setting.chargeAmount && userDataEntry?.paymentData?.chargeAmount > 0)
-            || (!userDataEntry.reciept && setting.shafadocPorsantPrompt && userDataEntry?.paymentData?.chargeAmount > 0)
-        const paraclinicPorsantCondition = userDataEntry.paraclinicPayment
+        const porsantCondition = (userDataEntry.reciept && setting.shafadocPorsantPrompt && setting.chargeAmount && userDataEntry?.paymentData?.chargeAmount > 0) || (!userDataEntry.reciept && setting.shafadocPorsantPrompt && userDataEntry?.paymentData?.chargeAmount > 0);
 
         return <Modal
             required={true}
@@ -75,8 +72,7 @@ class ModalPayment extends MyComponent {
                         <h3 style={{fontSize: '22px'}}>لطفا کارت را بکشید...</h3></div> : null}
                 <div className={'pad-8 dis-f'}><h3 style={{fontSize: '30px', margin: 'auto'}}>مبلغ قابل پرداخت: <span
                     style={{color: 'var(--goo-gre)'}}>{App.formatMoney(price)} ریال</span></h3></div>
-                {(porsantCondition || paraclinicPorsantCondition) &&
-                <p className={'promp'}>{porsantCondition ? setting.shafadocPorsantPrompt : paraclinicPorsantCondition ? setting.paraclinicPorsantPrompt : null}</p>}
+                {porsantCondition && <p className={'promp'}>{setting.shafadocPorsantPrompt}</p>}
                 <div className={'pad-8 dis-f'}>
                     {!state.paying ? <Button className={'flex mar-e-8'} onClick={this.pay.bind(this)}
                                              theme="green">پرداخت</Button> : null}
@@ -141,138 +137,153 @@ class ModalPayment extends MyComponent {
         const {props} = this;
         const {setting} = props;
         const {userDataEntry} = props.base;
-        if (userDataEntry.paraclinicPayment) {
-            this.setState({paying: true});
-            const totalPrice = userDataEntry?.paraclinicData?.pendingReceptions.reduce((total, current) => total + current.invoice.payable, 0)
-            const charge = userDataEntry?.paraclinicData?.pendingReceptions?.[0]?.invoice.invoice_items[userDataEntry?.paraclinicData?.pendingReceptions?.[0]?.invoice.invoice_items.length - 1].total;
-            Main.callPos(setting?.multiAccountPayment, setting.posServerIp, totalPrice.toString(), `${Number(totalPrice) > Number(charge) ? Number(totalPrice) - Number(charge) : 0},${charge}`, userDataEntry.nationalCode || '')
-                .then(data => {
-                    if (this.unmounted)
-                        return;
-
-                    this.setState({paying: false});
-                    console.log('pos data', data);
-
-                    if (data?.result?.ResponseCode === '00') {
-                        props.updateUserDataEntry({transactionId: data?.result?.RRN});
-
-                        signalR.setPayData({
-                            Response_Code: data?.result?.ResponseCode,
-                            Response_Description: data?.result?.ResponseDescription,
-                            Card_Number_Mask: data?.result?.CardNumberMask,
-                            Card_Number_Hash_Sha1: data?.result?.CardNumberHash_Sha1,
-                            Trace_Number: data?.result?.TraceNumber,
-                            Txn_Date: data?.result?.TxnDate,
-                            RRN: data?.result?.RRN,
-                            Terminal_Id: data?.result?.TerminalId,
-                            Serial_Id: data?.result?.SerialId,
-                            Req_Amount: data?.result?.ReqAmount || 0,
-                            POS_Version: data?.result?.POS_Version,
-                            Code_Meli: userDataEntry?.nationalCode || '',
-                            Kiosk_Num: setting.kioskNumber,
-                            Pos_Ip: data?.result?.PayId,
-                            Service_Id: userDataEntry.doctor?.id
-                        });
-
-                        const receptions = userDataEntry.paraclinicData.pendingReceptions.map(item => item.id)
-                        console.log(typeof receptions[0])
-                        const description = 'پرداخت نسخه پاراکلینیک'
-                        const bank = setting.paraclinicBankId
-                        const token = userDataEntry.paraclinicData.token
-                        const trackingCode = data?.result?.RRN || 123
-                        const formData = new FormData()
-                        receptions.forEach(item => formData.append('receptions[]', item))
-                        formData.append('bank', bank)
-                        formData.append('description', description)
-                        formData.append('tracking_code', trackingCode)
-                        const mainData = {}
-                        mainData.patientName = userDataEntry.paraclinicData.pendingReceptions[0].patient_first_name
-                        mainData.patientFamily = userDataEntry.paraclinicData.pendingReceptions[0].patient_last_name
-                        mainData.codeMelli = userDataEntry.nationalCode
-                        mainData.response = data.message
-                        mainData.bankId = bank
-                        mainData.description = description
-                        mainData.saleReferenceId = trackingCode
-                        mainData.send_at = moment().format()
-                        const paraclinicData = userDataEntry.paraclinicData.pendingReceptions.map(item => ({
-                            insuranceName: item.insurance_name,
-                            appointmentDate: item.appointment_date_time,
-                            created_at: item.created_at,
-                            doctor: item.doctor_full_name,
-                            therapistDoctor: item.doctor.first_name + ' ' + item.doctor.last_name,
-                            priceAmount: item.invoice.payable,
-                            receptionId: item.id
-                        }))
-                        api.paraclinicPay(formData,token)
-                            .then(data => {
-                                mainData.response = data.message
-                                mainData.finished = 'true'
-                                paraclinicData.forEach(item => {
-                                    paraclinicPayments.insert({
-                                        ...item,
-                                        ...mainData
-                                    })
-                                })
-                                this.props.history.push(Resource.Print.RECEIPT)
-                            })
-                            .catch(e => {
-                                this.props.updateBase({unpaied: true})
-                                mainData.finished = 'false'
-                                mainData.response = e
-                                paraclinicData.forEach(item => {
-                                    paraclinicPayments.insert({
-                                        ...item,
-                                        ...mainData
-                                    })
-                                })
-                                new Notif({
-                                    message: 'پرداخت شما ثبت شد',
-                                    theme: 'error'
-                                }).show();
-
-                                this.backClickHandler();
-                            })
-
-
-                    } else {
-                        new Notif({message: 'پرداخت غیر موفق دوباره امتحان کنید.', theme: 'error'}).show();
-                    }
-                })
-                .catch(message => {
-                    if (this.unmounted)
-                        return;
-
-                    this.setState({paying: false});
-
-                    new Notif({message, theme: 'error'}).show();
-                });
-
-        } else {
-            const chargeAmount = userDataEntry.reciept ? setting.chargeAmount ? userDataEntry.paymentData?.chargeAmount : 0 : userDataEntry.paymentData?.chargeAmount;
-            let zeroPrice;
-            if (userDataEntry.reciept) {
-                if (userDataEntry.internetResInfo.paymentAmount === 0 && userDataEntry.internetResInfo.remainedPaymentAmount === 0) {
-                    zeroPrice = 0;
-                } else {
-                    zeroPrice = userDataEntry.paymentData?.priceAmount
-                }
+        const chargeAmount = userDataEntry.reciept ? setting.chargeAmount ? userDataEntry.paymentData?.chargeAmount : 0 : setting.chargeAmountReserve ? userDataEntry.paymentData?.chargeAmount : 0;
+        let zeroPrice;
+        if (userDataEntry.reciept) {
+            if (userDataEntry.internetResInfo.paymentAmount === 0 && userDataEntry.internetResInfo.remainedPaymentAmount === 0) {
+                zeroPrice = 0;
             } else {
                 zeroPrice = userDataEntry.paymentData?.priceAmount
             }
-            const price = zeroPrice + chargeAmount;
+        } else {
+            if (setting.reservePrice) {
+                zeroPrice = userDataEntry.paymentData?.priceAmount
+            } else {
+                zeroPrice = 0;
+            }
+        }
+        const price = zeroPrice + chargeAmount;
 
-            if (price === 0 && setting.reciept) {
-                if (setting.generateHID && userDataEntry.standardInsurance.id) {
-                    this.queueHID();
+        if (price === 0 && setting.reciept) {
+            if (setting.generateHID && userDataEntry.standardInsurance.id) {
+                this.queueHID();
+            } else {
+                this.history.push(Resource.Print.RECEIPT);
+            }
+        } else if (price === 0 && !setting.reciept)
+            this.close(true)
+        else {
+            this.setState({paying: true});
+
+            if (setting.paymentMethodId === '1') {
+                console.log('called behpardakht')
+
+                if (setting?.multiAccountPayment) {
+                    console.log('called multi pay')
+                    const data = {
+                        ServiceCode: '4',
+                        TotalAmount: price.toString(),
+                        RequestList: [
+                            { AccountID: setting.accountIdHospital,Amount: (price - chargeAmount).toString()},
+                            { AccountID: setting.accountIdShafadoc,Amount: chargeAmount.toString()},
+                        ],
+                        PrintDetail: '1',
+                    }
+                    console.log(data)
+                    console.log(JSON.stringify(data))
+
+                    api.multiAccountPayment(setting.posServerIp,data)
+                        .then(data => {
+                            if (this.unmounted)
+                                return;
+
+                            this.setState({paying: false});
+                            console.log('pos data', data);
+                            if (data.ReturnCode === "100") {
+                                props.updateUserDataEntry({transactionId: data?.RRN});
+
+                                signalR.setPayData({
+                                    Response_Code: data?.ReturnCode,
+                                    Response_Description: data?.result?.ResponseDescription,
+                                    Card_Number_Mask: data?.result?.CardNumberMask,
+                                    Card_Number_Hash_Sha1: data?.result?.CardNumberHash_Sha1,
+                                    Trace_Number: data?.result?.TraceNumber,
+                                    Txn_Date: data?.result?.TxnDate,
+                                    RRN: data?.result?.RRN,
+                                    Terminal_Id: data?.result?.TerminalId,
+                                    Serial_Id: data?.result?.SerialId,
+                                    Req_Amount: data?.result?.ReqAmount || 0,
+                                    POS_Version: data?.result?.POS_Version,
+                                    Code_Meli: userDataEntry?.nationalCode || '',
+                                    Kiosk_Num: setting.kioskNumber,
+                                    Pos_Ip: data?.result?.PayId,
+                                    Service_Id: userDataEntry.doctor?.id
+                                });
+
+                                requestAnimationFrame(_ => {
+                                    this.close(true);
+                                });
+                            } else {
+                                new Notif({message: 'پرداخت غیر موفق دوباره امتحان کنید.', theme: 'error'}).show();
+                            }
+                        })
+                        .catch(err => {
+                            if (this.unmounted)
+                                return;
+
+                            this.setState({paying: false});
+
+                            new Notif({message:err, theme: 'error'}).show();
+                            console.log('failed')
+                        })
                 } else {
-                    this.history.push(Resource.Print.RECEIPT);
-                }
-            } else if (price === 0 && !setting.reciept)
-                this.close(true)
-            else {
-                this.setState({paying: true});
+                    const data = {
+                        ServiceCode: '2',
+                        Amount: price,
+                        AccountID: setting.accountIdHospital,
+                    }
+                    console.log('called one pay')
 
-                Main.callPos(setting?.multiAccountPayment, setting.posServerIp, price.toString(), `${userDataEntry.paymentData?.priceAmount},${userDataEntry.paymentData?.chargeAmount}`, userDataEntry.nationalCode || '')
+
+                    api.oneAccountPayment(setting.posServerIp,data)
+                        .then(data => {
+                            if (this.unmounted)
+                                return;
+
+                            this.setState({paying: false});
+                            console.log('pos data', data);
+                            if (data.ReturnCode === "100") {
+                                props.updateUserDataEntry({transactionId: data?.SerialTransaction});
+
+                                signalR.setPayData({
+                                    Response_Code: data?.ReturnCode,
+                                    Response_Description: data?.ReasonCode,
+                                    Card_Number_Mask: data?.PAN,
+                                    Card_Number_Hash_Sha1: data?.PAN,
+                                    Trace_Number: data?.TraceNumber,
+                                    Txn_Date: data?.TransactionDate,
+                                    RRN: data?.SerialTransaction,
+                                    Terminal_Id: data?.PcID,
+                                    Serial_Id: data?.result?.SerialId,
+                                    Req_Amount: data?.TotalAmount|| 0,
+                                    POS_Version: data?.result?.POS_Version,
+                                    Code_Meli: userDataEntry?.nationalCode || '',
+                                    Kiosk_Num: setting?.kioskNumber,
+                                    Pos_Ip: data?.TotalAmount || '0',
+                                    Service_Id: userDataEntry.doctor?.id
+                                });
+
+                                requestAnimationFrame(_ => {
+                                    this.close(true);
+                                });
+                            } else {
+                                new Notif({message: 'پرداخت غیر موفق دوباره امتحان کنید.', theme: 'error'}).show();
+                            }
+
+                        })
+                        .catch(err => {
+                            if (this.unmounted)
+                                return;
+
+                            this.setState({paying: false});
+
+                            new Notif({message:err, theme: 'error'}).show();
+                            console.log('failed')
+                        })
+                }
+
+            } else if (setting.paymentMethodId === '2') {
+                Main.callPos(setting?.multiAccountPayment, setting.posServerIp, price.toString(), `${setting.reservePrice ? userDataEntry.paymentData?.priceAmount : 1},${userDataEntry.paymentData?.chargeAmount}`, userDataEntry.nationalCode || '')
                     .then(data => {
                         if (this.unmounted)
                             return;
@@ -284,20 +295,20 @@ class ModalPayment extends MyComponent {
                             props.updateUserDataEntry({transactionId: data?.result?.RRN});
 
                             signalR.setPayData({
-                                Response_Code: data?.result?.ResponseCode,
-                                Response_Description: data?.result?.ResponseDescription,
-                                Card_Number_Mask: data?.result?.CardNumberMask,
-                                Card_Number_Hash_Sha1: data?.result?.CardNumberHash_Sha1,
-                                Trace_Number: data?.result?.TraceNumber,
-                                Txn_Date: data?.result?.TxnDate,
-                                RRN: data?.result?.RRN,
-                                Terminal_Id: data?.result?.TerminalId,
+                                Response_Code: data?.ReturnCode,
+                                Response_Description: data?.ReasonCode,
+                                Card_Number_Mask: data?.PAN,
+                                Card_Number_Hash_Sha1: data?.PAN,
+                                Trace_Number: data?.TraceNumber,
+                                Txn_Date: data?.TransactionDate,
+                                RRN: data?.SerialTransaction,
+                                Terminal_Id: data?.PcID,
                                 Serial_Id: data?.result?.SerialId,
-                                Req_Amount: data?.result?.ReqAmount || 0,
+                                Req_Amount: data?.TotalAmount|| 0,
                                 POS_Version: data?.result?.POS_Version,
                                 Code_Meli: userDataEntry?.nationalCode || '',
-                                Kiosk_Num: setting.kioskNumber,
-                                Pos_Ip: data?.result?.PayId,
+                                Kiosk_Num: setting?.kioskNumber,
+                                Pos_Ip: data?.TotalAmount || '0',
                                 Service_Id: userDataEntry.doctor?.id
                             });
 
@@ -331,13 +342,6 @@ class ModalPayment extends MyComponent {
                 this.props.history.push(Resource.Print.RECEIPT)
             });
     }
-
-    backClickHandler() {
-        const {props} = this;
-
-        props.history.push(Resource.Route.HOME);
-    }
-
 }
 
 const mapStateToProps = state => {
@@ -349,7 +353,6 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         updateUserDataEntry: props => dispatch(updateUserDataEntry(props)),
-        updateBase: props => dispatch(updateBase(props))
     };
 };
 

@@ -179,7 +179,7 @@ class Main {
                 resolve(list);
             });
 
-            setTimeout(_ => {
+            setTimeout(_ => { 
                 reject(Main.RequestTimeoutMessage);
             }, Main.RequestTimeoutDuration);
         });

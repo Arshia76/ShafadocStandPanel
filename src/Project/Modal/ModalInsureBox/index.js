@@ -93,7 +93,10 @@ class ModalInsureBox extends MyComponent {
                     <div className={'pad-8'}><h3 style={{fontSize: '20px'}}>لطفا بیمه خود را انتخاب کنید.</h3></div>
                     <div className="dis-f">
                         <div className={'List fb-10'}>
-                            {this.props.base.insurances.map((item, i) => {
+                            {this.props.base.userDataEntry.nationality === 'FOREIGN' ? this.props.base.insurances.filter(item => item.id.toString() === this.props.setting.foreigenerCode.toString()).map((item, i) => {
+                                return <ItemCard key={i} data={item} selected={fields.insurance?.id == item.id}
+                                                 onClick={this.clickEvent.bind(this)} title={item.name}/>
+                            }) : this.props.base.insurances.filter(item => item.id.toString() !== this.props.setting.foreigenerCode.toString()).map((item, i) => {
                                 return <ItemCard key={i} data={item} selected={fields.insurance?.id == item.id}
                                                  onClick={this.clickEvent.bind(this)} title={item.name}/>;
                             })}
@@ -308,7 +311,7 @@ class ModalInsureBox extends MyComponent {
 
                             console.log(data)
                             if (data.type === 'ditas2') {
-                                if (!(data?.response?.result?.data?.isSuccess) ||  data?.response?.resCode === -12305)
+                                if (!(data?.response?.result?.data?.isSuccess) || data?.response?.resCode === -12305)
                                     this.getSalamatData(App.storage.get('redux', {}).base.userDataEntry.nationalCode)
                                 else {
                                     const mapResult = this.mapInsurance(
@@ -340,8 +343,7 @@ class ModalInsureBox extends MyComponent {
                                     });
                                     this.close(true)
                                 }
-                            }
-                            else {
+                            } else {
                                 this.getSalamatData(App.storage.get('redux', {}).base.userDataEntry.nationalCode)
                             }
                         }).catch(err => {
@@ -391,6 +393,7 @@ class ModalInsureBox extends MyComponent {
                 return;
             }
 
+
             this.props.updateUserDataEntry({
                 shafadocInsurance: {
                     id: fields.insurance.id,
@@ -417,9 +420,16 @@ class ModalInsureBox extends MyComponent {
                     else if ((data?.response?.info === null && userDataEntry.nationality === 'FOREIGN') ||
                         (data?.response?.info?.productName === 'فاقد پوشش بیمه' && userDataEntry.nationality === 'FOREIGN') ||
                         (data?.response?.resCode === -12305 && userDataEntry.nationality === 'FOREIGN')
-                    )
+                    ) {
+                        this.props.updateUserDataEntry({
+                            shafadocInsurance: {
+                                id: this.props.setting.foreigenerCodeAzad,
+                                name: 'اتباع خارجه آزاد',
+                                number: 0
+                            }
+                        })
                         this.close(true)
-                    else {
+                    } else {
                         const mapResult = this.mapInsurance(
                             data?.response?.info?.productId.toString() || userDataEntry.standardInsurance.id,
                             data?.response?.info?.productName || userDataEntry.standardInsurance.boxId
@@ -433,7 +443,7 @@ class ModalInsureBox extends MyComponent {
                                 'F': 'FEMALE'
                             }[data?.response?.info?.gender] || userDataEntry.gender,
                             standardInsurance: {
-                                id: data?.response?.info?.productName.toString() || userDataEntry.standardInsurance.id,
+                                id: data?.response?.info?.productId?.toString() || userDataEntry.standardInsurance.id,
                                 name: data?.response?.result?.data.data[0].insurer.value || userDataEntry.standardInsurance.name,
                                 boxId: data?.response?.info?.productId || userDataEntry.standardInsurance.boxId,
                                 boxName: data?.response?.info?.productName || userDataEntry.standardInsurance.boxName,
@@ -449,19 +459,34 @@ class ModalInsureBox extends MyComponent {
                         });
                         this.close(true)
                     }
-                }
-                else {
+                } else {
                     if (userDataEntry.nationality === 'IRANIAN')
                         this.setState({loading: false})
-                    else
+                    else {
+                        this.props.updateUserDataEntry({
+                            shafadocInsurance: {
+                                id: this.props.setting.foreigenerCodeAzad,
+                                name: 'اتباع خارجه آزاد',
+                                number: 0
+                            }
+                        })
                         this.close(true)
+                    }
                 }
             })
             .catch(err => {
                 if (userDataEntry.nationality === 'IRANIAN')
                     this.setState({loading: false})
-                else
+                else {
+                    this.props.updateUserDataEntry({
+                        shafadocInsurance: {
+                            id: this.props.setting.foreigenerCodeAzad,
+                            name: 'اتباع خارجه آزاد',
+                            number: 0
+                        }
+                    })
                     this.close(true)
+                }
             })
     }
 }

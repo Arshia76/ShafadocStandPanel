@@ -24,7 +24,7 @@ class api {
     };
 
     static getInsuranceDataByDitas2(nationalCode) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve,reject) => {
             fetch(`${window.setting?.serverDomain}/api.aspx?codeMeli=${nationalCode}&Func=callupInsure`, {
                 method: 'GET',
                 redirect: 'follow'
@@ -45,7 +45,7 @@ class api {
     }
 
     static getInsuranceDataBySalamat(nationalCode) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve,reject) => {
             fetch(`${window.setting?.serverDomain}/api.aspx?codeMeli=${nationalCode}&Func=callupInsure&type=salamat`, {
                 method: 'GET',
                 redirect: 'follow'
@@ -65,8 +65,8 @@ class api {
         });
     }
 
-    static getSabtAhvalData(nationalCode, birthDate) {
-        return new Promise((resolve, reject) => {
+    static getSabtAhvalData(nationalCode,birthDate) {
+        return new Promise((resolve,reject) => {
             fetch(`${window.setting?.serverDomain}/api.aspx?codeMeli=${nationalCode}&birthDate=${birthDate}&Func=sabtahval`, {
                 method: 'GET',
                 redirect: 'follow'
@@ -324,66 +324,97 @@ class api {
         })
     }
 
-    static paraclinicLogin(props) {
+    static oneAccountPayment(address, props) {
         return new Promise((resolve, reject) => {
-            fetch(`${window?.setting?.paraclinicPaymentUrl}/login`, {
-                method: 'POST',
+            fetch(address, {
+                method: "POST",
                 headers: {
-                    'Accept': 'application/json',
+                    "Content-Type": "application/json"
                 },
-                body: props
+                body: JSON.stringify(props)
             })
                 .then(response => {
-                    if(response.ok) {
+                    if (response.ok) {
                         return response.json()
-                    }
-                    else {
-                        return reject()
+                    } else {
+                        return reject('پرداخت ناموفق لطفا دوباره امتحان کنید.')
                     }
                 })
-                .then(data => resolve(data))
-                .catch(e => reject(e))
+                .then(data => {
+                    console.log(data.ReturnCode)
+                    console.log(data)
+
+                    if (data.ReturnCode === "100") {
+                        console.log(data);
+                        resolve(data)
+                    } else {
+                        console.log(data)
+                        return reject('پرداخت ناموفق لطفا دوباره امتحان کنید.')
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                    reject('پرداخت ناموفق لطفا دوباره امتحان کنید.')
+                })
         })
     }
 
-    static getPendingReserves(nationalCode, token, before, after) {
+    static multiAccountPayment(address, props) {
         return new Promise((resolve, reject) => {
-            fetch(`${window?.setting?.paraclinicPaymentUrl}/kiosk/receptions?national_id=${nationalCode}&filter[before]=${before}&filter[after]=${after}`, {
-                method: 'GET',
+            fetch(address, {
+                method: "POST",
                 headers: {
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            })
-                .then(response => response.json())
-                .then(data => resolve(data))
-                .catch(e => reject(e))
-        })
-    }
-
-    static paraclinicPay(props, token) {
-        return new Promise((resolve, reject) => {
-            fetch(`${window?.setting?.paraclinicPaymentUrl}/kiosk/receptions/pay`, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${token}`
-
+                    "Content-Type": "application/json"
                 },
-                body: props,
-                redirect: 'follow'
+                body: JSON.stringify(props)
             })
                 .then(response => {
-                    if(response.ok) {
-                        return response.text()
+                    if (response.ok) {
+                        return response.json()
                     } else {
-                        return reject()
+                        return reject('پرداخت ناموفق لطفا دوباره امتحان کنید.')
                     }
                 })
-                .then(data => resolve(data))
-                .catch(e => {
-                    console.log(e)
-                    reject(e)
+                .then(data => {
+                    if (data.ReturnCode === "100") {
+                        console.log(data);
+                        resolve(data)
+                    } else {
+                        console.log(data)
+                        return reject('پرداخت ناموفق لطفا دوباره امتحان کنید.')
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                    reject('پرداخت ناموفق لطفا دوباره امتحان کنید.')
+                })
+        })
+    }
+
+    static checkReserved(props) {
+        const requestOptions = {
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: props,
+            method: 'POST'
+        }
+
+        return new Promise((resolve, reject) => {
+            fetch(`${window?.setting?.shafadocKoudakDomain}/api/kiosk`, requestOptions)
+                .then(res => {
+                    if (res.ok) {
+                        return res.text()
+                    } else {
+                        return reject('نوبت شما برای این پزشک در این تایم قبلا ثبت شده است.')
+                    }
+                }).then(data => {
+                console.log(data);
+                resolve(data)
+            })
+                .catch(err => {
+                    console.log(err);
+                    reject(err)
                 })
         })
     }

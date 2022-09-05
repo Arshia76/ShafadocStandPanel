@@ -254,7 +254,7 @@ class PageReserveFinalization extends MyComponent {
 
                 const body = {
                     turnNo: '0',
-                    priceAmount: parseInt(userDataEntry.paymentData.priceAmount || 0),
+                    priceAmount: setting.reservePrice ? parseInt(userDataEntry.paymentData.priceAmount || 0) : 0,
                     ftId: userDataEntry.reserveTime.id,
                     codeMeli: userDataEntry.nationalCode,
                     mobile: userDataEntry.mobile,
@@ -302,6 +302,7 @@ class PageReserveFinalization extends MyComponent {
 
                                 service.printReceipt({context: this});
                             } else {
+                                props.updateBase({unreserved: data});
                                 body.finished = 'false';
 
                                 futureReserves.insert(body);
@@ -315,7 +316,7 @@ class PageReserveFinalization extends MyComponent {
                             }
                         }).catch(err => {
                             props.updateBase({loading: false});
-
+                            props.updateBase({unreserved: body});
                             body.response = err;
                             body.finished = 'false';
 
@@ -332,7 +333,7 @@ class PageReserveFinalization extends MyComponent {
                     })
                     .catch(err => {
                         props.updateBase({loading: false});
-
+                        props.updateBase({unreserved: body});
                         body.response = err;
                         body.finished = 'false';
 
@@ -368,7 +369,7 @@ class PageReserveFinalization extends MyComponent {
                             specialtySlug: userDataEntry.doctor.spSlug.toString(),
                             patientCodeMelli: userDataEntry.nationalCode,
                             turnNo: userDataEntry.resCount || data.ResCount,
-                            paymentAmount: userDataEntry.paymentData.priceAmount.toString(),
+                            paymentAmount: setting.reservePrice ? userDataEntry.paymentData.priceAmount.toString() : '0',
                             transactionId: userDataEntry.transactionId || '',
                             firstName: userDataEntry.firstName || '',
                             lastName: userDataEntry.lastName || '',
@@ -516,10 +517,13 @@ class PageReserveFinalization extends MyComponent {
             this.queueGender();
         else if (setting.patientMobile && !userDataEntry.mobile)
             this.queueMobile();
-        //tId is used in Future Reserves and spId in jari Reserves (if an error given the condition will be )
-        //(setting.getPsychiatristVisitTime && (((Number(setting.psychiatristId) === userDataEntry.doctor.tId && userDataEntry.darmangah === 'FUTURE')
-        // || Number(setting.psychiatristId) === userDataEntry.doctor.spId))
-        else if (setting.getPsychiatristVisitTime && (Number(setting.psychiatristId) === userDataEntry.doctor.tId || Number(setting.psychiatristId) === userDataEntry.doctor.spId))
+        else if (setting.getPsychiatristVisitTime &&
+            (
+                (Number(setting.psychiatristId) === userDataEntry.doctor.tId && userDataEntry.darmangah === 'FUTURE')
+                || (Number(setting.psychiatristId) === userDataEntry.doctor.spId && userDataEntry.darmangah === 'MORNING')
+                || (Number(setting.psychiatristId) === userDataEntry.doctor.spId && userDataEntry.darmangah === 'EVENING')
+            )
+        )
             this.queuePsychiatrist();
         else
             this.queueServicePrice();

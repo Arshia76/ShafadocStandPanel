@@ -28,12 +28,6 @@ export const resetUserDataEntry = _ => {
         type: UPDATE_BASE,
         userDataEntry: {
             reciept: null,
-            paraclinicPayment:null,
-            firstTimePsychiatristVisit:null,
-            paraclinicData: {
-                pendingReceptions:null,
-                token:null
-            },
             darmangah: null, // MORNING, EVENING, FUTURE
             nationalCode: null,
             insurance:null,

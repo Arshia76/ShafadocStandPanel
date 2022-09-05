@@ -17,7 +17,6 @@ import ImagePackHome from './Image/pack/home.svg';
 import ImageCircle1 from './Image/simple-circle-1.svg';
 import ImageCircle2 from './Image/simple-circle-2.svg';
 import ImageCircle3 from './Image/simple-circle-3.svg';
-import ImageCircle4 from './Image/simple-circle-4.svg';
 import ImageDoctor from './Image/doctor.svg';
 import ImageLoaderWhite from './Image/loader.svg';
 import ImageLoaderBlack from './Image/loader-black.svg';
@@ -64,8 +63,7 @@ class Resource {
         CIRCLE: {
             1: ImageCircle1,
             2: ImageCircle2,
-            3: ImageCircle3,
-            4:ImageCircle4
+            3: ImageCircle3
         },
 
         DARMANGAH: Imagedarmangah,
@@ -96,7 +94,6 @@ class Resource {
     static Route = {
         HOME: '/',
         DARMANGAH: '/darmangah',
-        PARACLINIC_RECEPTION: '/paraclinic-reception',
         SPECIALITIES: '/specialities',
         DOCTORS: '/doctors',
         RESERVE_FINALIZATION: '/reserve-finalization',

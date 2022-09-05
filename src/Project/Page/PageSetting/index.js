@@ -9,6 +9,7 @@ import Button from "../../../Components/Button";
 import Main from "../../../ElectronLayer/Main";
 import Resource from "../../../Resource";
 import {Url} from "../../../App";
+import {updateBase} from "../../../Redux/Actions/base";
 
 class PageSetting extends MyComponent {
     constructor(props) {
@@ -56,7 +57,6 @@ class PageSetting extends MyComponent {
             <Input className={'fb-10 pad-8'} id={'pos-server-ip'} placeholder={'آدرس IP دستگاه POS'} label={'آدرس IP دستگاه POS'} value={setting.posServerIp} onChange={this.inputChangeHandler.bind(this, 'posServerIp')}/>
             <Input className={'fb-20 pad-8'} id={'shafadoc-domain'} placeholder={'آدرس سرور شفاداک'} label={'آدرس سرور شفاداک'} value={setting.shafadocDomain} onChange={this.inputChangeHandler.bind(this, 'shafadocDomain')}/>
             <Input className={'fb-20 pad-8'} id={'shafadoc-kodakan-domain'} placeholder={'آدرس سرور شفاداک برای استعلام قیمت کودکان'} label={'آدرس سرور شفاداک برای استعلام قیمت کودکان'} value={setting.shafadocKoudakDomain} onChange={this.inputChangeHandler.bind(this, 'shafadocKoudakDomain')}/>
-            <Input className={'fb-20 pad-8'} id={'paraclinicPaymentUrl'} placeholder={'آدرس سرور پرداخت پاراکلینیک'} label={'آدرس سرور پرداخت پاراکلینیک'} value={setting.paraclinicPaymentUrl} onChange={this.inputChangeHandler.bind(this, 'paraclinicPaymentUrl')}/>
             <Input className={'fb-20 pad-8'} id={'result-path'} placeholder={'آدرس فایل result.json'} label={'آدرس فایل result.json'} value={setting.resultPath} onDoubleClick={this.resultBrowsePath.bind(this)} onChange={this.inputChangeHandler.bind(this, 'resultPath')}/>
             <Input className={'fb-20 pad-8'} id={'person-path'} placeholder={'آدرس فایل person.json'} label={'آدرس فایل person.json'} value={setting.personPath} onDoubleClick={this.personBrowsePath.bind(this)} onChange={this.inputChangeHandler.bind(this, 'personPath')}/>
             <Input className={'fb-20 pad-8'} id={'edge-shift-path'} placeholder={'آدرس فایل edgeShiftPath.json'} label={'آدرس فایل edgeShiftPath.json'} value={setting.edgeShiftPath} onDoubleClick={this.edgeShiftBrowsePath.bind(this)} onChange={this.inputChangeHandler.bind(this, 'edgeShiftPath')}/>
@@ -64,14 +64,16 @@ class PageSetting extends MyComponent {
             <Input className={'fb-20 pad-8'} id={'report-layout-path'} placeholder={'آدرس قالب چاپ قبض'} label={'آدرس قالب چاپ قبض'} value={setting.reportLayoutPath} onDoubleClick={this.reportLayoutBrowsePath.bind(this)} onChange={this.inputChangeHandler.bind(this, 'reportLayoutPath')}/>
             <Input className={'fb-20 pad-8'} id={'report2-layout-path'} placeholder={' آدرس قالب چاپ قبض حضوری'} label={' آدرس قالب چاپ قبض حضوری'} value={setting.report2LayoutPath} onDoubleClick={this.report2LayoutBrowsePath.bind(this)} onChange={this.inputChangeHandler.bind(this, 'report2LayoutPath')}/>
             <Input className={'fb-20 pad-8'} id={'foreign-client-prevent'} type={'text'} placeholder={'در صورت افزودن متن اجازه دریافت نوبت به بیماران اتباع داده نمی شود'} label={'در صورت افزودن متن اجازه دریافت نوبت به بیماران اتباع داده نمی شود'} value={setting.foreignClientPrevent} onChange={this.inputChangeHandler.bind(this, 'foreignClientPrevent')}/>
-            <Input className={'fb-20 pad-8'} id={'paraclinicPaymentText'} type={'text'} placeholder={'متن پرداخت خدمت پاراکلینیک را وارد کنید'} label={'متن پرداخت پاراکلینیک را وارد کنید'} value={setting.paraclinicPaymentText} onChange={this.inputChangeHandler.bind(this, 'paraclinicPaymentText')}/>
             <Input className={'fb-20 pad-8'} id={'shafadoc-porsant-prompt'} type={'text'} placeholder={'پیغام تاییدیه کمیسیون شفاداک که در هنگام پرداخت نمایش داده می شود'} label={'پیغام تاییدیه کمیسیون شفاداک که در هنگام پرداخت نمایش داده می شود'} value={setting.shafadocPorsantPrompt} onChange={this.inputChangeHandler.bind(this, 'shafadocPorsantPrompt')}/>
-            <Input className={'fb-20 pad-8'} id={'paraclinic-porsant-prompt'} type={'text'} placeholder={'پیغام تاییدیه کمیسیون پاراکلینیک که در هنگام پرداخت نمایش داده می شود'} label={'پیغام تاییدیه کمیسیون پاراکلینیک که در هنگام پرداخت نمایش داده می شود'} value={setting.paraclinicPorsantPrompt} onChange={this.inputChangeHandler.bind(this, 'paraclinicPorsantPrompt')}/>
             <Input className={'fb-10 pad-8'} id={'national-code-usage-limit'} type={'number'} placeholder={'دفعات تکرار امکان استفاده از کدملی تکراری'} label={'دفعات تکرار امکان استفاده از کدملی تکراری'} value={setting.nationalCodeUsageLimit} onChange={this.inputChangeHandler.bind(this, 'nationalCodeUsageLimit')}/>
             <Input className={'fb-5 pad-8'} id={'node-id'} type={'number'} placeholder={'شماره مرکز'} label={'شماره مرکز'} value={setting.nodeId} onChange={this.inputChangeHandler.bind(this, 'nodeId')}/>
             <Input className={'fb-5 pad-8'} id={'kiosk-number'} type={'number'} placeholder={'شماره کیوسک'} label={'شماره کیوسک'} value={setting.kioskNumber} onChange={this.inputChangeHandler.bind(this, 'kioskNumber')}/>
+            <Input className={'fb-5 pad-8'} id={'payment-method-id'} type={'number'} placeholder={'شناسه نوع پرداخت'} label={'شناسه نوع پرداخت'} value={setting.paymentMethodId} onChange={this.inputChangeHandler.bind(this, 'paymentMethodId')}/>
             <Input className={'fb-5 pad-8'} id={'psychiatrist-id'} type={'number'} placeholder={'شناسه روانپزشک'} label={'شناسه روانپزشک'} value={setting.psychiatristId} onChange={this.inputChangeHandler.bind(this, 'psychiatristId')}/>
-            <Input className={'fb-5 pad-8'} id={'paraclinic-bank-id'} type={'number'} placeholder={'شناسه بانک پرداخت پاراکلینیک'} label={'شناسه بانک پرداخت پاراکلینیک'} value={setting.paraclinicBankId} onChange={this.inputChangeHandler.bind(this, 'paraclinicBankId')}/>
+            <Input className={'fb-5 pad-8'} id={'foreigenerCode'} type={'number'} placeholder={'کد اتباع'} label={'کد اتباع'} value={setting.foreigenerCode} onChange={this.inputChangeHandler.bind(this, 'foreigenerCode')}/>
+            <Input className={'fb-5 pad-8'} id={'foreigenerCodeAzad'} type={'number'} placeholder={'کد اتباع آزاد'} label={'کد اتباع آزاد'} value={setting.foreigenerCodeAzad} onChange={this.inputChangeHandler.bind(this, 'foreigenerCodeAzad')}/>
+            <Input className={'fb-20 pad-8'} id={'account-id-hospital'} type={'text'} placeholder={'شناسه حساب بیمارستان'} label={'شناسه حساب بیمارستان'} value={setting.accountIdHospital} onChange={this.inputChangeHandler.bind(this, 'accountIdHospital')}/>
+            <Input className={'fb-20 pad-8'} id={'account-id-shafadoc'} type={'text'} placeholder={'شناسه حساب شفاداک'} label={'شناسه حساب شفاداک'} value={setting.accountIdShafadoc} onChange={this.inputChangeHandler.bind(this, 'accountIdShafadoc')}/>
             <div className={'checkbox fb-20 pad-8'}>
                 <input type="checkbox" id={'national-code-validation-check'} checked={setting.nationalCodeValidationCheck} onChange={this.checkChangeHandler.bind(this, 'nationalCodeValidationCheck')}/>
                 <label htmlFor="national-code-validation-check">بررسی صحت کدملی وارد شده.</label>
@@ -97,8 +99,20 @@ class PageSetting extends MyComponent {
                 <label htmlFor="patient-mobile">در صورت دریافت نوبت برای روزهای آینده به تلفن همراه کاربر پیامک ارسال شود.</label>
             </div>
             <div className={'checkbox fb-20 pad-8'}>
+                <input type="checkbox" id={'showChargeAmountReciept'} name={'showChargeAmountReciept'} checked={setting.showChargeAmountReciept} onChange={this.checkChangeHandler.bind(this,  'showChargeAmountReciept')}/>
+                <label htmlFor="insurance-inquiry-type1">نمایش قیمت خدمات الکترونیکی در دریافت قبض</label>
+            </div>
+            <div className={'checkbox fb-20 pad-8'}>
                 <input type="checkbox" id={'chargeAmount'} name={'chargeAmount'} checked={setting.chargeAmount} onChange={this.checkChangeHandler.bind(this,  'chargeAmount')}/>
                 <label htmlFor="insurance-inquiry-type1">دریافت قیمت خدمات الکترونیکی در دریافت قبض</label>
+            </div>
+            <div className={'checkbox fb-20 pad-8'}>
+                <input type="checkbox" id={'chargeAmountReserve'} name={'chargeAmountReserve'} checked={setting.chargeAmountReserve} onChange={this.checkChangeHandler.bind(this,  'chargeAmountReserve')}/>
+                <label htmlFor="insurance-inquiry-type1">دریافت قیمت خدمات الکترونیکی در نوبت گیری</label>
+            </div>
+            <div className={'checkbox fb-20 pad-8'}>
+                <input type="checkbox" id={'reservePrice'} name={'reservePrice'} checked={setting.reservePrice} onChange={this.checkChangeHandler.bind(this,  'reservePrice')}/>
+                <label htmlFor="insurance-inquiry-type1">دریافت قیمت نوبت گیری</label>
             </div>
             <div className={'checkbox fb-20 pad-8'}>
                 <input type="checkbox" id={'disableJari'} name={'disableJari'} checked={setting.disableJari} onChange={this.checkChangeHandler.bind(this,  'disableJari')}/>
@@ -111,10 +125,6 @@ class PageSetting extends MyComponent {
             <div className={'checkbox fb-20 pad-8'}>
                 <input type="checkbox" id={'disableServices'} name={'disableServices'} checked={setting.disableServices} onChange={this.checkChangeHandler.bind(this,  'disableServices')}/>
                 <label htmlFor="insurance-inquiry-type1">متوقف کردن دریافت خدمات پزشکی</label>
-            </div>
-            <div className={'checkbox fb-20 pad-8'}>
-                <input type="checkbox" id={'disableParaclinicPayment'} name={'disableParaclinicPayment'} checked={setting.disableParaclinicPayment} onChange={this.checkChangeHandler.bind(this,  'disableParaclinicPayment')}/>
-                <label htmlFor="insurance-inquiry-type1">متوقف کردن پرداخت پاراکلینیک</label>
             </div>
             <div className={'checkbox fb-20 pad-8'}>
                 <input type="checkbox" id={'getPsychiatristVisitTime'} name={'getPsychiatristVisitTime'} checked={setting.getPsychiatristVisitTime} onChange={this.checkChangeHandler.bind(this,  'getPsychiatristVisitTime')}/>
@@ -155,6 +165,7 @@ class PageSetting extends MyComponent {
             <Input className={'fb-5 pad-8'} id={'receipt-print-margin-right'} type={'number'} placeholder={'راست'} label={'راست'} value={setting.receiptPrint.margin.right} onChange={this.inputChangeHandler.bind(this, 'receiptPrint.margin.right')}/>
             <Button className={'mar-8'} theme={'red'} title={'بازگشت'} onClick={this.backClickHandler.bind(this)}/>
             <Button className={'mar-8'} theme={'yellow'} title={'صف رزرو'} onClick={this.goToQueue.bind(this)}/>
+            <Button className={'mar-8'} theme={'blue'} title={'حذف unreserved'} onClick={this.clearUnreserved.bind(this)}/>
             <div className="flex">
             </div>
             <Button className={'mar-8'} theme={'red'} title={'بستن نرم‌افزار'} onClick={this.closeAppHandler.bind(this)}/>
@@ -188,6 +199,10 @@ class PageSetting extends MyComponent {
 
     goToQueue() {
         this.props.history.push(Url.parse(Resource.Route.QUEUE,{type:'today'}));
+    }
+
+    clearUnreserved() {
+        this.props.updateBase({unreserved:{}})
     }
 
     inputChangeHandler(key, value) {
@@ -227,14 +242,6 @@ class PageSetting extends MyComponent {
             });
     }
 
-    report3LayoutBrowsePath() {
-        Main.browse()
-            .then(path => {
-                if (path)
-                    this.inputChangeHandler('report3LayoutPath', path);
-            });
-    }
-
     report2LayoutBrowsePath() {
         Main.browse()
             .then(path => {
@@ -268,7 +275,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        updateSetting: props => dispatch(updateSetting(props))
+        updateSetting: props => dispatch(updateSetting(props)),
+        updateBase: props => dispatch(updateBase(props))
     };
 };
 

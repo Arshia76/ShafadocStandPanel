@@ -1,6 +1,6 @@
 import React from 'react'
 import MyComponent from "../../../Components/MyComponent";
-import {futureReserves, paraclinicPayments, todayReserves} from "../../../db";
+import {futureReserves, todayReserves} from "../../../db";
 import './index.css'
 import Button from "../../../Components/Button";
 import {Url} from "../../../App";
@@ -20,6 +20,7 @@ class PageQueue extends MyComponent {
 
     componentDidMount() {
         this.loadList();
+
     }
 
     render() {
@@ -30,21 +31,16 @@ class PageQueue extends MyComponent {
                         disabled={props.match.params.type === 'today'}>صف روز جاری</Button>
                 <Button theme={"blue"} className={'mar-8'} onClick={this.changeQueueClickHandler.bind(this, 'future')}
                         disabled={props.match.params.type === 'future'}>صف روز‌های آینده</Button>
-                <Button theme={"blue"} className={'mar-8'}
-                        onClick={this.changeQueueClickHandler.bind(this, 'paraclinic')}
-                        disabled={props.match.params.type === 'paraclinic'}>صف پرداخت</Button>
                 <Button theme={"red"} className={'mar-8'}
                         onClick={_ => props.history.push(Resource.Route.SETTING)}>بازگشت</Button>
                 <div className="flex"></div>
                 <Button theme={"yellow"} className={'mar-8'} onClick={this.removeFinishedReserves.bind(this)}>{{
                     today: 'حذف رزرو‌های تکمیلی جاری',
-                    future: 'حذف رزرو‌های تکمیلی آینده',
-                    paraclinic: 'حذف پرداخت های تکمیلی پاراکلینیک'
+                    future: 'حذف رزرو‌های تکمیلی آینده'
                 }[props.match.params.type]}</Button>
                 <Button theme={"red"} className={'mar-8'} onClick={this.removeAllReserves.bind(this)}>{{
                     today: 'حذف کل رزرو‌های جاری',
-                    future: 'حذف کل رزرو‌های آینده',
-                    paraclinic: 'حذف کل پرداخت های پاراکلینیک '
+                    future: 'حذف کل رزرو‌های آینده'
                 }[props.match.params.type]}</Button>
             </div>
             <table>
@@ -88,15 +84,6 @@ class PageQueue extends MyComponent {
                         keys: Object.keys(list?.[0] || {})
                     });
                 });
-
-        if (this.state.type === 'paraclinic')
-            paraclinicPayments.list(true)
-                .then(list => {
-                    this.setState({
-                        list,
-                        keys: Object.keys(list?.[0] || {})
-                    });
-                });
     }
 
     removeAllReserves() {
@@ -109,12 +96,6 @@ class PageQueue extends MyComponent {
                 break;
             case 'future':
                 futureReserves.clearAll()
-                    .then(_ => {
-                        this.loadList();
-                    });
-                break;
-            case 'paraclinic':
-                paraclinicPayments.clearAll()
                     .then(_ => {
                         this.loadList();
                     });
@@ -134,12 +115,6 @@ class PageQueue extends MyComponent {
                 break;
             case 'future':
                 futureReserves.clearSentRows()
-                    .then(_ => {
-                        this.loadList();
-                    });
-                break;
-            case 'paraclinic':
-                paraclinicPayments.clearSentRows()
                     .then(_ => {
                         this.loadList();
                     });
